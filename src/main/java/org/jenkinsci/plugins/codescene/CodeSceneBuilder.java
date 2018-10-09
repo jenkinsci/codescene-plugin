@@ -254,8 +254,8 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
                     couplingThresholdPercent, useBiomarkers, letBuildPassOnFailedAnalysis);
             EnvVars env = build.getEnvironment(listener);
 
-            String previousCommit = env.get("GIT_PREVIOUS_SUCCESSFUL_COMMIT");
-            String currentCommit = env.get("GIT_COMMIT");
+            Commit previousCommit = new Commit(env.get("GIT_PREVIOUS_SUCCESSFUL_COMMIT"));
+            Commit currentCommit = new Commit(env.get("GIT_COMMIT"));
             String branch = env.get("GIT_BRANCH");
 
             if (isAnalyzeLatestIndividually() && previousCommit != null) {
@@ -271,7 +271,8 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
                 }
             }
             if (isAnalyzeBranchDiff() && getBaseRevision() != null) {
-                List<String> revisions = getCommitRange(build, workspace, launcher, listener, getBaseRevision(), currentCommit);
+                final Commit branchBase = new Commit(getBaseRevision());
+                List<String> revisions = getCommitRange(build, workspace, launcher, listener, branchBase, currentCommit);
                 if (revisions.isEmpty()) {
                     listener.getLogger().println(format("No new commits to analyze between the branch '%s' " +
                             "and base revision '%s'.", branch, baseRevision));
@@ -340,8 +341,8 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
             FilePath workspace,
             Launcher launcher,
             TaskListener listener,
-            String fromRevision,
-            String toRevision) throws IOException, InterruptedException {
+            Commit fromRevision,
+            Commit toRevision) throws IOException, InterruptedException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         launcher.launch()
