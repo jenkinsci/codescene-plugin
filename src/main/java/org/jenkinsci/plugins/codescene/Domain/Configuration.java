@@ -9,17 +9,17 @@ public class Configuration {
     private final Repository repo;
     private final int couplingThresholdPercent;
     private final boolean useBiomarkers;
-    private final boolean failBuildOnFailedAnalysis;
+    private final boolean letBuildPassOnFailedAnalysis;
 
     public Configuration(final URL codeSceneUrl, final CodeSceneUser user, final Repository gitRepositoryToAnalyze,
                          int couplingThresholdPercent, boolean useBiomarkers,
-                         boolean failBuildOnFailedAnalysis) {
+                         boolean letBuildPassOnFailedAnalysis) {
         this.url = codeSceneUrl;
         this.user = user;
         this.repo = gitRepositoryToAnalyze;
         this.couplingThresholdPercent = couplingThresholdPercent;
         this.useBiomarkers = useBiomarkers;
-        this.failBuildOnFailedAnalysis = failBuildOnFailedAnalysis;
+        this.letBuildPassOnFailedAnalysis = letBuildPassOnFailedAnalysis;
     }
 
     public URL codeSceneUrl() {
@@ -42,5 +42,5 @@ public class Configuration {
         return useBiomarkers;
     }
 
-    public boolean failBuildOnFailedAnalysis() { return failBuildOnFailedAnalysis; }
+    public boolean letBuildPassOnFailedAnalysis() { return letBuildPassOnFailedAnalysis; }
 }
