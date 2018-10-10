@@ -259,30 +259,10 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
             String branch = env.get("GIT_BRANCH");
 
             if (isAnalyzeLatestIndividually()) {
-                final CommitRange rangeToAnalyse = new CommitRange(previousCommit, currentCommit);
-                List<String> revisions = getCommitRange(build, workspace, launcher, listener, rangeToAnalyse);
-                if (revisions.isEmpty()) {
-                    listener.getLogger().println("No new commits to analyze individually for this build.");
-                } else {
-                    ArrayList<CodeSceneBuildActionEntry> entries = runDeltaAnalysesOnIndividualCommits(codesceneConfig, revisions, listener);
-                    for (CodeSceneBuildActionEntry entry : entries) {
-                        markAsUnstableWhenAtRiskThreshold(riskThreshold, entry, build, listener);
-                    }
-                    build.addAction(new CodeSceneBuildAction("Delta - Individual Commits", entries));
-                }
+                analyzeLatestIndividualCommitFor(build, workspace, launcher, listener, codesceneConfig, previousCommit, currentCommit);
             }
             if (isAnalyzeBranchDiff() && getBaseRevision() != null) {
-                final Commit branchBase = new Commit(getBaseRevision());
-                final CommitRange rangeToAnalyse = new CommitRange(branchBase, currentCommit);
-                List<String> revisions = getCommitRange(build, workspace, launcher, listener, rangeToAnalyse);
-                if (revisions.isEmpty()) {
-                    listener.getLogger().println(format("No new commits to analyze between the branch '%s' " +
-                            "and base revision '%s'.", branch, baseRevision));
-                } else {
-                    CodeSceneBuildActionEntry entry = runDeltaAnalysisOnBranchDiff(codesceneConfig, revisions, branch, listener);
-                    markAsUnstableWhenAtRiskThreshold(riskThreshold, entry, build, listener);
-                    build.addAction(new CodeSceneBuildAction("Delta - By Branch", singletonList(entry)));
-                }
+                analyzeWorkOnBranchFor(build, workspace, launcher, listener, codesceneConfig, currentCommit, branch);
             }
 
         } catch (RemoteAnalysisException e) {
@@ -291,6 +271,34 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
         } catch (InterruptedException | IOException e) {
             listener.error("Failed to run delta analysis: %s", e);
             build.setResult(Result.FAILURE);
+        }
+    }
+
+    private void analyzeWorkOnBranchFor(Run<?, ?> build, FilePath workspace, Launcher launcher, TaskListener listener, Configuration codesceneConfig, Commit currentCommit, String branch) throws IOException, InterruptedException, RemoteAnalysisException {
+        final Commit branchBase = new Commit(getBaseRevision());
+        final CommitRange rangeToAnalyse = new CommitRange(branchBase, currentCommit);
+        List<String> revisions = getCommitRange(build, workspace, launcher, listener, rangeToAnalyse);
+        if (revisions.isEmpty()) {
+            listener.getLogger().println(format("No new commits to analyze between the branch '%s' " +
+                    "and base revision '%s'.", branch, baseRevision));
+        } else {
+            CodeSceneBuildActionEntry entry = runDeltaAnalysisOnBranchDiff(codesceneConfig, revisions, branch, listener);
+            markAsUnstableWhenAtRiskThreshold(riskThreshold, entry, build, listener);
+            build.addAction(new CodeSceneBuildAction("Delta - By Branch", singletonList(entry)));
+        }
+    }
+
+    private void analyzeLatestIndividualCommitFor(Run<?, ?> build, FilePath workspace, Launcher launcher, TaskListener listener, Configuration codesceneConfig, Commit previousCommit, Commit currentCommit) throws IOException, InterruptedException, RemoteAnalysisException {
+        final CommitRange rangeToAnalyse = new CommitRange(previousCommit, currentCommit);
+        List<String> revisions = getCommitRange(build, workspace, launcher, listener, rangeToAnalyse);
+        if (revisions.isEmpty()) {
+            listener.getLogger().println("No new commits to analyze individually for this build.");
+        } else {
+            ArrayList<CodeSceneBuildActionEntry> entries = runDeltaAnalysesOnIndividualCommits(codesceneConfig, revisions, listener);
+            for (CodeSceneBuildActionEntry entry : entries) {
+                markAsUnstableWhenAtRiskThreshold(riskThreshold, entry, build, listener);
+            }
+            build.addAction(new CodeSceneBuildAction("Delta - Individual Commits", entries));
         }
     }
 
