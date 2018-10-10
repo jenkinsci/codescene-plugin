@@ -2,6 +2,7 @@ package org.jenkinsci.plugins.codescene;
 
 import org.jenkinsci.plugins.codescene.Domain.Commit;
 import org.jenkinsci.plugins.codescene.Domain.RiskClassification;
+import org.jenkinsci.plugins.codescene.Domain.RiskDescription;
 import org.jenkinsci.plugins.codescene.Domain.Warning;
 
 import java.net.URL;
@@ -15,8 +16,17 @@ public class CodeSceneBuildActionEntry {
     private final List<Warning> warnings;
     private final URL viewUrl;
     private final int riskThreshold;
+    private final RiskDescription description;
 
-    public CodeSceneBuildActionEntry(String title, boolean showCommits, List<Commit> commits, RiskClassification risk, List<Warning> warnings, URL viewUrl, int riskThreshold) {
+    public CodeSceneBuildActionEntry(
+            String title,
+            boolean showCommits,
+            List<Commit> commits,
+            RiskClassification risk,
+            List<Warning> warnings,
+            URL viewUrl,
+            int riskThreshold,
+            RiskDescription description) {
         this.title = title;
         this.showCommits = showCommits;
         this.commits = commits;
@@ -24,6 +34,7 @@ public class CodeSceneBuildActionEntry {
         this.warnings = warnings;
         this.viewUrl = viewUrl;
         this.riskThreshold = riskThreshold;
+        this.description = description;
     }
 
     public String getTitle() {
@@ -41,6 +52,8 @@ public class CodeSceneBuildActionEntry {
     public RiskClassification getRisk() {
         return risk;
     }
+
+    public RiskDescription getDescription() { return description; }
 
     public List<Warning> getWarnings() {
         return warnings;

@@ -158,6 +158,8 @@
                             </ul>
                         </j:if>
 
+                        <p>${entry.description}</p>
+
                         <j:if test="${entry.hasWarnings}">
                                 <j:forEach var="warning" items="${entry.warnings}">
                                     <h4 class="category">${warning.category}</h4>

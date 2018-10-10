@@ -10,6 +10,7 @@ public class DeltaAnalysisResult {
     private final Commits commits;
     private final RiskClassification risk;
     private final Warnings warnings;
+    private final RiskDescription description;
 
     public DeltaAnalysisResult(final Commits commits, final JsonObject result) {
         ensureTheVersionIsSupported(result);
@@ -19,6 +20,7 @@ public class DeltaAnalysisResult {
         viewUrl = result.getString("view");
         risk = riskFrom(deltaResult);
         warnings = warningsFrom(deltaResult);
+        description = descriptionOfRiskFrom(deltaResult);
         this.commits = commits;
     }
 
@@ -50,11 +52,15 @@ public class DeltaAnalysisResult {
         return ws;
     }
 
+    private RiskDescription descriptionOfRiskFrom(JsonObject deltaResult) {
+        return new RiskDescription(deltaResult.getString("description"));
+    }
+
     private void ensureTheVersionIsSupported(JsonObject result) {
         final String version = result.getString("version");
 
-        if (!version.equals("1")) {
-            throw new RuntimeException("The CodeScene API reports version " + version + ", which we don't know. You need to upgrade this plug-in.");
+        if (!version.equals("2")) {
+            throw new RuntimeException("The CodeScene API reports version " + version + ", which we don't support. You need to upgrade CodeScene.");
         }
     }
 
@@ -69,6 +75,8 @@ public class DeltaAnalysisResult {
     public RiskClassification getRisk() {
         return risk;
     }
+
+    public RiskDescription getRiskDescription() { return description; }
 
     public Warnings getWarnings() {
         return warnings;

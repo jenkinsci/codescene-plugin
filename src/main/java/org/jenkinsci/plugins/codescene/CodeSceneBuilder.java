@@ -216,7 +216,8 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
                         result.getRisk(),
                         result.getWarnings().value(),
                         detailsUrl,
-                        riskThreshold));
+                        riskThreshold,
+                        result.getRiskDescription()));
             }
         } else {
             listener.getLogger().format("No commits to run delta analysis on.%n");
@@ -238,7 +239,15 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
                 config.codeSceneUrl().getPort(),
                 result.getViewUrl());
 
-        return new CodeSceneBuildActionEntry(branchName, true, commitSet.value(), result.getRisk(), result.getWarnings().value(), detailsUrl, riskThreshold);
+        return new CodeSceneBuildActionEntry(
+                branchName,
+                true,
+                commitSet.value(),
+                result.getRisk(),
+                result.getWarnings().value(),
+                detailsUrl,
+                riskThreshold,
+                result.getRiskDescription());
     }
 
     @Override
@@ -275,7 +284,7 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
     }
 
     private void analyzeWorkOnBranchFor(Run<?, ?> build, FilePath workspace, Launcher launcher, TaskListener listener, Configuration codesceneConfig, Commit currentCommit, String branch) throws IOException, InterruptedException, RemoteAnalysisException {
-        final Commit branchBase = new Commit(getBaseRevision());
+        final Branch branchBase = new Branch(getBaseRevision());
         final CommitRange rangeToAnalyse = new CommitRange(branchBase, currentCommit);
         List<String> revisions = getCommitRange(build, workspace, launcher, listener, rangeToAnalyse);
         if (revisions.isEmpty()) {
