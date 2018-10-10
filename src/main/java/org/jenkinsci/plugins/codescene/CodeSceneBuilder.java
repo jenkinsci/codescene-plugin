@@ -65,6 +65,9 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
     private int couplingThresholdPercent = DEFAULT_COUPLING_THRESHOLD_PERCENT;
     // CodeScene 2.4.0+ supports biomarkers as a separate risk category - default: true
     private boolean useBiomarkers = true;
+    // Some users prefer their builds to continue even if CodeScene -- for some reason -- fail to
+    // execute the delta analysis. By default we fail the build, but this can be overriden:
+    private boolean failBuildOnFailedAnalysis = true;
 
     // deprecated authentication params - use credentialsId instead
     @Deprecated private transient String username;
@@ -119,6 +122,10 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
         return useBiomarkers;
     }
 
+    public boolean isFailBuildOnFailedAnalysis() {
+        return failBuildOnFailedAnalysis;
+    }
+
     @DataBoundSetter
     public void setAnalyzeLatestIndividually(boolean analyzeLatestIndividually) {
         this.analyzeLatestIndividually = analyzeLatestIndividually;
@@ -156,6 +163,9 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
         this.useBiomarkers = useBiomarkers;
     }
 
+    @DataBoundSetter
+    public void setFailBuildOnFailedAnalysis(boolean failBuildOnFailedAnalysis) { this.failBuildOnFailedAnalysis = failBuildOnFailedAnalysis; }
+
     // handle default values for new fields with regards to existing jobs (backward compatibility)
     // check https://wiki.jenkins-ci.org/display/JENKINS/Hint+on+retaining+backward+compatibility
     protected Object readResolve() {
@@ -181,7 +191,8 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
         return commitSets;
     }
 
-    private ArrayList<CodeSceneBuildActionEntry> runDeltaAnalysesOnIndividualCommits(Configuration config, List<String> revisions, TaskListener listener) throws MalformedURLException {
+    private ArrayList<CodeSceneBuildActionEntry> runDeltaAnalysesOnIndividualCommits(Configuration config, List<String> revisions, TaskListener listener)
+            throws RemoteAnalysisException, MalformedURLException {
         List<Commits> commitSets = revisionsAsIndividualCommitSets(revisions);
         ArrayList<CodeSceneBuildActionEntry> entries = new ArrayList<>(commitSets.size());
 
@@ -214,7 +225,8 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
         return entries;
     }
 
-    private CodeSceneBuildActionEntry runDeltaAnalysisOnBranchDiff(Configuration config, List<String> revisions, String branchName, TaskListener listener) throws MalformedURLException {
+    private CodeSceneBuildActionEntry runDeltaAnalysisOnBranchDiff(Configuration config, List<String> revisions, String branchName, TaskListener listener)
+            throws RemoteAnalysisException, MalformedURLException {
         Commits commitSet = revisionsAsCommitSet(revisions);
         DeltaAnalysis deltaAnalysis = new DeltaAnalysis(config);
         listener.getLogger().format("Running delta analysis on branch %s in repository %s.%n", branchName, config.gitRepisitoryToAnalyze().value());
@@ -239,7 +251,7 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
             URL url = new URL(deltaAnalysisUrl);
 
             Configuration codesceneConfig = new Configuration(url, userConfig(), new Repository(repository),
-                    couplingThresholdPercent, useBiomarkers);
+                    couplingThresholdPercent, useBiomarkers, failBuildOnFailedAnalysis);
             EnvVars env = build.getEnvironment(listener);
 
             String previousCommit = env.get("GIT_PREVIOUS_SUCCESSFUL_COMMIT");
@@ -270,10 +282,21 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
                 }
             }
 
+        } catch (RemoteAnalysisException e) {
+            listener.error("Remote failure as CodeScene couldn't perform the delta analysis: %s", e);
+            build.setResult(buildResultDependsOn(failBuildOnFailedAnalysis));
         } catch (InterruptedException | IOException e) {
             listener.error("Failed to run delta analysis: %s", e);
             build.setResult(Result.FAILURE);
         }
+    }
+
+    private static Result buildResultDependsOn(final boolean failOnFailedAnalysis) {
+        if (failOnFailedAnalysis) {
+            return Result.FAILURE;
+        }
+
+        return Result.UNSTABLE;
     }
 
     private CodeSceneUser userConfig() {
