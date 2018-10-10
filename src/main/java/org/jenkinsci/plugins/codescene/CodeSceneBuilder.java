@@ -243,7 +243,7 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
 
     @Override
     public void perform(Run<?, ?> build, FilePath workspace, Launcher launcher, TaskListener listener) {
-        if (!isAnalyzeLatestIndividually() && !isAnalyzeBranchDiff()) {
+        if (isDeltaAnalysisConfigured()) {
             return;
         }
 
@@ -292,6 +292,10 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
             listener.error("Failed to run delta analysis: %s", e);
             build.setResult(Result.FAILURE);
         }
+    }
+
+    private boolean isDeltaAnalysisConfigured() {
+        return !isAnalyzeLatestIndividually() && !isAnalyzeBranchDiff();
     }
 
     private static Result buildResultForFailedAnalysisDependsOn(final boolean passOnFailedAnalysis) {
