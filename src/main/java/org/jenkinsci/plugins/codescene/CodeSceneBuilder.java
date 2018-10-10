@@ -258,8 +258,9 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
             Commit currentCommit = new Commit(env.get("GIT_COMMIT"));
             String branch = env.get("GIT_BRANCH");
 
-            if (isAnalyzeLatestIndividually() && previousCommit != null) {
-                List<String> revisions = getCommitRange(build, workspace, launcher, listener, previousCommit, currentCommit);
+            if (isAnalyzeLatestIndividually()) {
+                final CommitRange rangeToAnalyse = new CommitRange(previousCommit, currentCommit);
+                List<String> revisions = getCommitRange(build, workspace, launcher, listener, rangeToAnalyse);
                 if (revisions.isEmpty()) {
                     listener.getLogger().println("No new commits to analyze individually for this build.");
                 } else {
@@ -272,7 +273,8 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
             }
             if (isAnalyzeBranchDiff() && getBaseRevision() != null) {
                 final Commit branchBase = new Commit(getBaseRevision());
-                List<String> revisions = getCommitRange(build, workspace, launcher, listener, branchBase, currentCommit);
+                final CommitRange rangeToAnalyse = new CommitRange(branchBase, currentCommit);
+                List<String> revisions = getCommitRange(build, workspace, launcher, listener, rangeToAnalyse);
                 if (revisions.isEmpty()) {
                     listener.getLogger().println(format("No new commits to analyze between the branch '%s' " +
                             "and base revision '%s'.", branch, baseRevision));
@@ -341,12 +343,11 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
             FilePath workspace,
             Launcher launcher,
             TaskListener listener,
-            Commit fromRevision,
-            Commit toRevision) throws IOException, InterruptedException {
+            CommitRange revisionSpan) throws IOException, InterruptedException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         launcher.launch()
-                .cmdAsSingleString(format("git log --pretty='%%H' %s..%s", fromRevision, toRevision))
+                .cmdAsSingleString(format("git log --pretty='%%H' %s..%s", revisionSpan.from(), revisionSpan.to()))
                 .pwd(workspace)
                 .envs(build.getEnvironment(listener))
                 .stdout(out)
