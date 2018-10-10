@@ -70,6 +70,8 @@ Check [Injecting Secrets into Jenkins Build Jobs](https://support.cloudbees.com/
 
 ## Changelog
 
+* 1.1.4
+ * Reverse the previously added configuration option so that a user explicitly has to allow an analysis failure to pass the build.
 * 1.1.3
  * Introduce a configuration option to mark builds as UNSTABLE rather than FAILED if a remote CodeScene analysis couldn't be performed.
 * 1.1.2

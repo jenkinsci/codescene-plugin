@@ -67,7 +67,7 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
     private boolean useBiomarkers = true;
     // Some users prefer their builds to continue even if CodeScene -- for some reason -- fail to
     // execute the delta analysis. By default we fail the build, but this can be overriden:
-    private boolean failBuildOnFailedAnalysis = true;
+    private boolean letBuildPassOnFailedAnalysis = false;
 
     // deprecated authentication params - use credentialsId instead
     @Deprecated private transient String username;
@@ -122,8 +122,8 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
         return useBiomarkers;
     }
 
-    public boolean isFailBuildOnFailedAnalysis() {
-        return failBuildOnFailedAnalysis;
+    public boolean isLetBuildPassOnFailedAnalysis() {
+        return letBuildPassOnFailedAnalysis;
     }
 
     @DataBoundSetter
@@ -164,7 +164,7 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
     }
 
     @DataBoundSetter
-    public void setFailBuildOnFailedAnalysis(boolean failBuildOnFailedAnalysis) { this.failBuildOnFailedAnalysis = failBuildOnFailedAnalysis; }
+    public void setLetBuildPassOnFailedAnalysis(boolean letBuildPassOnFailedAnalysis) { this.letBuildPassOnFailedAnalysis = letBuildPassOnFailedAnalysis; }
 
     // handle default values for new fields with regards to existing jobs (backward compatibility)
     // check https://wiki.jenkins-ci.org/display/JENKINS/Hint+on+retaining+backward+compatibility
@@ -251,7 +251,7 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
             URL url = new URL(deltaAnalysisUrl);
 
             Configuration codesceneConfig = new Configuration(url, userConfig(), new Repository(repository),
-                    couplingThresholdPercent, useBiomarkers, failBuildOnFailedAnalysis);
+                    couplingThresholdPercent, useBiomarkers, letBuildPassOnFailedAnalysis);
             EnvVars env = build.getEnvironment(listener);
 
             String previousCommit = env.get("GIT_PREVIOUS_SUCCESSFUL_COMMIT");
@@ -284,19 +284,19 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
 
         } catch (RemoteAnalysisException e) {
             listener.error("Remote failure as CodeScene couldn't perform the delta analysis: %s", e);
-            build.setResult(buildResultDependsOn(failBuildOnFailedAnalysis));
+            build.setResult(buildResultForFailedAnalysisDependsOn(letBuildPassOnFailedAnalysis));
         } catch (InterruptedException | IOException e) {
             listener.error("Failed to run delta analysis: %s", e);
             build.setResult(Result.FAILURE);
         }
     }
 
-    private static Result buildResultDependsOn(final boolean failOnFailedAnalysis) {
-        if (failOnFailedAnalysis) {
-            return Result.FAILURE;
+    private static Result buildResultForFailedAnalysisDependsOn(final boolean passOnFailedAnalysis) {
+        if (passOnFailedAnalysis) {
+            return Result.SUCCESS;
         }
 
-        return Result.UNSTABLE;
+        return Result.FAILURE;
     }
 
     private CodeSceneUser userConfig() {
