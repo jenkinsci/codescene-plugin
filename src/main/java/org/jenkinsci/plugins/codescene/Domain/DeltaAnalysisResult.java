@@ -20,7 +20,7 @@ public class DeltaAnalysisResult {
         viewUrl = result.getString("view");
         risk = riskFrom(deltaResult);
         warnings = warningsFrom(deltaResult);
-        description = descriptionOfRiskFrom(deltaResult);
+        description = descriptionOfRiskFrom(deltaResult, versionOf(result));
         this.commits = commits;
     }
 
@@ -52,16 +52,24 @@ public class DeltaAnalysisResult {
         return ws;
     }
 
-    private RiskDescription descriptionOfRiskFrom(JsonObject deltaResult) {
+    private RiskDescription descriptionOfRiskFrom(JsonObject deltaResult, final String version) {
+        if (version.equals("1")) {
+            return new RiskDescription("No risk description available: upgrade CodeScene");
+        }
+
         return new RiskDescription(deltaResult.getString("description"));
     }
 
     private void ensureTheVersionIsSupported(JsonObject result) {
-        final String version = result.getString("version");
+        final String version = versionOf(result);
 
-        if (!version.equals("2")) {
+        if (!version.equals("1") || !version.equals("2")) {
             throw new RuntimeException("The CodeScene API reports version " + version + ", which we don't support. You need to upgrade CodeScene.");
         }
+    }
+
+    private static String versionOf(JsonObject result) {
+        return result.getString("version");
     }
 
     public String getViewUrl() {
