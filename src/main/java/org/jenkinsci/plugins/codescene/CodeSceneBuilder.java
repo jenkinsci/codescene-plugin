@@ -216,7 +216,8 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
                         result.getRisk(),
                         result.getWarnings().value(),
                         detailsUrl,
-                        riskThreshold));
+                        riskThreshold,
+                        result.getRiskDescription()));
             }
         } else {
             listener.getLogger().format("No commits to run delta analysis on.%n");
@@ -238,12 +239,20 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
                 config.codeSceneUrl().getPort(),
                 result.getViewUrl());
 
-        return new CodeSceneBuildActionEntry(branchName, true, commitSet.value(), result.getRisk(), result.getWarnings().value(), detailsUrl, riskThreshold);
+        return new CodeSceneBuildActionEntry(
+                branchName,
+                true,
+                commitSet.value(),
+                result.getRisk(),
+                result.getWarnings().value(),
+                detailsUrl,
+                riskThreshold,
+                result.getRiskDescription());
     }
 
     @Override
     public void perform(Run<?, ?> build, FilePath workspace, Launcher launcher, TaskListener listener) {
-        if (!isAnalyzeLatestIndividually() && !isAnalyzeBranchDiff()) {
+        if (isDeltaAnalysisConfigured()) {
             return;
         }
 
@@ -254,32 +263,15 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
                     couplingThresholdPercent, useBiomarkers, letBuildPassOnFailedAnalysis);
             EnvVars env = build.getEnvironment(listener);
 
-            String previousCommit = env.get("GIT_PREVIOUS_SUCCESSFUL_COMMIT");
-            String currentCommit = env.get("GIT_COMMIT");
+            Commit previousCommit = new Commit(env.get("GIT_PREVIOUS_SUCCESSFUL_COMMIT"));
+            Commit currentCommit = new Commit(env.get("GIT_COMMIT"));
             String branch = env.get("GIT_BRANCH");
 
-            if (isAnalyzeLatestIndividually() && previousCommit != null) {
-                List<String> revisions = getCommitRange(build, workspace, launcher, listener, previousCommit, currentCommit);
-                if (revisions.isEmpty()) {
-                    listener.getLogger().println("No new commits to analyze individually for this build.");
-                } else {
-                    ArrayList<CodeSceneBuildActionEntry> entries = runDeltaAnalysesOnIndividualCommits(codesceneConfig, revisions, listener);
-                    for (CodeSceneBuildActionEntry entry : entries) {
-                        markAsUnstableWhenAtRiskThreshold(riskThreshold, entry, build, listener);
-                    }
-                    build.addAction(new CodeSceneBuildAction("Delta - Individual Commits", entries));
-                }
+            if (isAnalyzeLatestIndividually()) {
+                analyzeLatestIndividualCommitFor(build, workspace, launcher, listener, codesceneConfig, previousCommit, currentCommit);
             }
             if (isAnalyzeBranchDiff() && getBaseRevision() != null) {
-                List<String> revisions = getCommitRange(build, workspace, launcher, listener, getBaseRevision(), currentCommit);
-                if (revisions.isEmpty()) {
-                    listener.getLogger().println(format("No new commits to analyze between the branch '%s' " +
-                            "and base revision '%s'.", branch, baseRevision));
-                } else {
-                    CodeSceneBuildActionEntry entry = runDeltaAnalysisOnBranchDiff(codesceneConfig, revisions, branch, listener);
-                    markAsUnstableWhenAtRiskThreshold(riskThreshold, entry, build, listener);
-                    build.addAction(new CodeSceneBuildAction("Delta - By Branch", singletonList(entry)));
-                }
+                analyzeWorkOnBranchFor(build, workspace, launcher, listener, codesceneConfig, currentCommit, branch);
             }
 
         } catch (RemoteAnalysisException e) {
@@ -289,6 +281,38 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
             listener.error("Failed to run delta analysis: %s", e);
             build.setResult(Result.FAILURE);
         }
+    }
+
+    private void analyzeWorkOnBranchFor(Run<?, ?> build, FilePath workspace, Launcher launcher, TaskListener listener, Configuration codesceneConfig, Commit currentCommit, String branch) throws IOException, InterruptedException, RemoteAnalysisException {
+        final Branch branchBase = new Branch(getBaseRevision());
+        final CommitRange rangeToAnalyse = new CommitRange(branchBase, currentCommit);
+        List<String> revisions = getCommitRange(build, workspace, launcher, listener, rangeToAnalyse);
+        if (revisions.isEmpty()) {
+            listener.getLogger().println(format("No new commits to analyze between the branch '%s' " +
+                    "and base revision '%s'.", branch, baseRevision));
+        } else {
+            CodeSceneBuildActionEntry entry = runDeltaAnalysisOnBranchDiff(codesceneConfig, revisions, branch, listener);
+            markAsUnstableWhenAtRiskThreshold(riskThreshold, entry, build, listener);
+            build.addAction(new CodeSceneBuildAction("Delta - By Branch", singletonList(entry)));
+        }
+    }
+
+    private void analyzeLatestIndividualCommitFor(Run<?, ?> build, FilePath workspace, Launcher launcher, TaskListener listener, Configuration codesceneConfig, Commit previousCommit, Commit currentCommit) throws IOException, InterruptedException, RemoteAnalysisException {
+        final CommitRange rangeToAnalyse = new CommitRange(previousCommit, currentCommit);
+        List<String> revisions = getCommitRange(build, workspace, launcher, listener, rangeToAnalyse);
+        if (revisions.isEmpty()) {
+            listener.getLogger().println("No new commits to analyze individually for this build.");
+        } else {
+            ArrayList<CodeSceneBuildActionEntry> entries = runDeltaAnalysesOnIndividualCommits(codesceneConfig, revisions, listener);
+            for (CodeSceneBuildActionEntry entry : entries) {
+                markAsUnstableWhenAtRiskThreshold(riskThreshold, entry, build, listener);
+            }
+            build.addAction(new CodeSceneBuildAction("Delta - Individual Commits", entries));
+        }
+    }
+
+    private boolean isDeltaAnalysisConfigured() {
+        return !isAnalyzeLatestIndividually() && !isAnalyzeBranchDiff();
     }
 
     private static Result buildResultForFailedAnalysisDependsOn(final boolean passOnFailedAnalysis) {
@@ -340,12 +364,11 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
             FilePath workspace,
             Launcher launcher,
             TaskListener listener,
-            String fromRevision,
-            String toRevision) throws IOException, InterruptedException {
+            CommitRange revisionSpan) throws IOException, InterruptedException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         launcher.launch()
-                .cmdAsSingleString(format("git log --pretty='%%H' %s..%s", fromRevision, toRevision))
+                .cmdAsSingleString(format("git log --pretty='%%H' %s..%s", revisionSpan.from(), revisionSpan.to()))
                 .pwd(workspace)
                 .envs(build.getEnvironment(listener))
                 .stdout(out)
