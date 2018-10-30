@@ -63,7 +63,7 @@ public class DeltaAnalysisResult {
     private void ensureTheVersionIsSupported(JsonObject result) {
         final String version = versionOf(result);
 
-        if (!version.equals("1") || !version.equals("2")) {
+        if (! (version.equals("1") || version.equals("2"))) {
             throw new RuntimeException("The CodeScene API reports version " + version + ", which we don't support. You need to upgrade CodeScene.");
         }
     }
