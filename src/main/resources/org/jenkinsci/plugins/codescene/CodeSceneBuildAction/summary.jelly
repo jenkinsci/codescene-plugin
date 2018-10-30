@@ -149,6 +149,8 @@
                             <p class="hits-risk-threshold">This delta hit the configured risk threshold of ${entry.riskThreshold}.</p>
                         </j:if>
 
+                        <p>${entry.description}</p>
+
                         <j:if test="${entry.showCommits}">
                             <h4>Commits</h4>
                             <ul>
@@ -157,8 +159,6 @@
                                 </j:forEach>
                             </ul>
                         </j:if>
-
-                        <p>${entry.description}</p>
 
                         <j:if test="${entry.hasWarnings}">
                                 <j:forEach var="warning" items="${entry.warnings}">
