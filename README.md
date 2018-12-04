@@ -6,6 +6,8 @@
 A jenkins plugin for
 [CodeScene](http://www.empear.com/products/codescene-on-premise/) by Empear.
 
+Developers, check [internal jenkins plugin documentation](https://github.com/empear-analytics/codescene-docs/blob/master/codescene-jenkins-plugin.md) (private repo).
+
 
 CodeScene detects potential maintenance problems and early warnings in your
 codebase. The earlier you can react to those findings, the better. That’s why
