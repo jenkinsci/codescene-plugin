@@ -12,7 +12,7 @@ public class Commit {
 
     public Commit(final String hash) {
         if (hash == null) {
-            throw new IllegalArgumentException("A commit hash cannot be null - just don't do that");
+            throw new IllegalArgumentException("A commit hash cannot be null!");
         }
 
         final Matcher m = hashPattern.matcher(hash);

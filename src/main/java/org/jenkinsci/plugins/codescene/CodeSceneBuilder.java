@@ -37,7 +37,6 @@ import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
-import javax.servlet.ServletException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -250,6 +249,23 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
                 result.getRiskDescription());
     }
 
+    /**
+     * Find the previous successful commit in the environment,
+     * or use the base revision (usually reference to the base branch like 'origin/master')
+     * if there's no previous commit set.
+     * This is important in case we are executing the first build of of a branch.
+     */
+    private CommitRange getRangeFromPreviousSuccessfulCommit(EnvVars env, Commit currentCommit) {
+        // This can be null: see https://issues.jenkins-ci.org/browse/JENKINS-51324
+        final String previousCommitFromEnv = env.get("GIT_PREVIOUS_SUCCESSFUL_COMMIT");
+        if (previousCommitFromEnv != null) {
+            return new CommitRange(new Commit(previousCommitFromEnv), currentCommit);
+        } else {
+            // fallback to the base revision
+            return new CommitRange(new Branch(getBaseRevision()), currentCommit);
+        }
+    }
+
     @Override
     public void perform(Run<?, ?> build, FilePath workspace, Launcher launcher, TaskListener listener) {
         if (isDeltaAnalysisConfigured()) {
@@ -263,13 +279,14 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
                     couplingThresholdPercent, useBiomarkers, letBuildPassOnFailedAnalysis);
             EnvVars env = build.getEnvironment(listener);
 
-            Commit previousCommit = new Commit(env.get("GIT_PREVIOUS_SUCCESSFUL_COMMIT"));
-            Commit currentCommit = new Commit(env.get("GIT_COMMIT"));
-            String branch = env.get("GIT_BRANCH");
+
+            final Commit currentCommit = new Commit(env.get("GIT_COMMIT"));
 
             if (isAnalyzeLatestIndividually()) {
-                analyzeLatestIndividualCommitFor(build, workspace, launcher, listener, codesceneConfig, previousCommit, currentCommit);
+                analyzeLatestIndividualCommitFor(build, workspace, launcher, listener, codesceneConfig,
+                        getRangeFromPreviousSuccessfulCommit(env, currentCommit));
             }
+            final String branch = env.get("GIT_BRANCH");
             if (isAnalyzeBranchDiff() && getBaseRevision() != null) {
                 analyzeWorkOnBranchFor(build, workspace, launcher, listener, codesceneConfig, currentCommit, branch);
             }
@@ -283,7 +300,9 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
         }
     }
 
-    private void analyzeWorkOnBranchFor(Run<?, ?> build, FilePath workspace, Launcher launcher, TaskListener listener, Configuration codesceneConfig, Commit currentCommit, String branch) throws IOException, InterruptedException, RemoteAnalysisException {
+    private void analyzeWorkOnBranchFor(Run<?, ?> build, FilePath workspace, Launcher launcher, TaskListener listener,
+                                        Configuration codesceneConfig, Commit currentCommit, String branch)
+            throws IOException, InterruptedException, RemoteAnalysisException {
         final Branch branchBase = new Branch(getBaseRevision());
         final CommitRange rangeToAnalyse = new CommitRange(branchBase, currentCommit);
         List<String> revisions = getCommitRange(build, workspace, launcher, listener, rangeToAnalyse);
@@ -297,8 +316,9 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
         }
     }
 
-    private void analyzeLatestIndividualCommitFor(Run<?, ?> build, FilePath workspace, Launcher launcher, TaskListener listener, Configuration codesceneConfig, Commit previousCommit, Commit currentCommit) throws IOException, InterruptedException, RemoteAnalysisException {
-        final CommitRange rangeToAnalyse = new CommitRange(previousCommit, currentCommit);
+    private void analyzeLatestIndividualCommitFor(Run<?, ?> build, FilePath workspace, Launcher launcher, TaskListener listener,
+                                                  Configuration codesceneConfig, CommitRange rangeToAnalyse)
+            throws IOException, InterruptedException, RemoteAnalysisException {
         List<String> revisions = getCommitRange(build, workspace, launcher, listener, rangeToAnalyse);
         if (revisions.isEmpty()) {
             listener.getLogger().println("No new commits to analyze individually for this build.");
@@ -408,13 +428,13 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
         }
 
         @Override
-        public boolean configure(StaplerRequest staplerRequest, JSONObject json) throws FormException {
+        public boolean configure(StaplerRequest staplerRequest, JSONObject json) {
             save();
             return true; // indicate that everything is good so far
         }
 
         public FormValidation doCheckBaseRevision(@QueryParameter boolean analyzeBranchDiff,
-                                                  @QueryParameter String baseRevision) throws IOException, ServletException {
+                                                  @QueryParameter String baseRevision) {
             if (analyzeBranchDiff && (baseRevision == null || baseRevision.isEmpty())) {
                 return FormValidation.error("Base revision cannot be empty.");
             } else {
