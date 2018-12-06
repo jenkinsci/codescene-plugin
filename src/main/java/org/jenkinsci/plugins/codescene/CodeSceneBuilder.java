@@ -11,9 +11,9 @@ import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
 import com.cloudbees.plugins.credentials.common.UsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import hudson.EnvVars;
-import hudson.Launcher;
 import hudson.Extension;
 import hudson.FilePath;
+import hudson.Launcher;
 import hudson.console.HyperlinkNote;
 import hudson.model.Item;
 import hudson.model.Queue;
@@ -22,15 +22,23 @@ import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.model.queue.Tasks;
 import hudson.security.ACL;
-import hudson.tasks.Builder;
 import hudson.tasks.BuildStepDescriptor;
+import hudson.tasks.Builder;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import jenkins.model.Jenkins;
 import jenkins.tasks.SimpleBuildStep;
 import net.sf.json.JSONObject;
 import org.jenkinsci.Symbol;
-import org.jenkinsci.plugins.codescene.Domain.*;
+import org.jenkinsci.plugins.codescene.Domain.Branch;
+import org.jenkinsci.plugins.codescene.Domain.CodeSceneUser;
+import org.jenkinsci.plugins.codescene.Domain.Commit;
+import org.jenkinsci.plugins.codescene.Domain.CommitRange;
+import org.jenkinsci.plugins.codescene.Domain.Commits;
+import org.jenkinsci.plugins.codescene.Domain.Configuration;
+import org.jenkinsci.plugins.codescene.Domain.DeltaAnalysisResult;
+import org.jenkinsci.plugins.codescene.Domain.RemoteAnalysisException;
+import org.jenkinsci.plugins.codescene.Domain.Repository;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
@@ -44,8 +52,13 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
+
+    private static final Logger logger = Logger.getLogger(CodeSceneBuilder.class.getName());
+
     private static final int DEFAULT_RISK_THRESHOLD = 7;
     // default is the same as in codescene rest api and shouldn't be changed
     private static final int DEFAULT_COUPLING_THRESHOLD_PERCENT = 80;
@@ -293,6 +306,9 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
 
         } catch (RemoteAnalysisException e) {
             listener.error("Remote failure as CodeScene couldn't perform the delta analysis: %s", e);
+            // This is necessary to log the complete stacktrace - listener only shows exception message
+            // Note: this log is visible only in the jenkins logs, not in the job's console log.
+            logger.log(Level.WARNING, "Remote failure as CodeScene couldn't perform the delta analysis: %s", e);
             build.setResult(buildResultForFailedAnalysisDependsOn(letBuildPassOnFailedAnalysis));
         } catch (InterruptedException | IOException e) {
             listener.error("Failed to run delta analysis: %s", e);
