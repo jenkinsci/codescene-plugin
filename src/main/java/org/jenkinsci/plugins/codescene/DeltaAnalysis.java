@@ -33,7 +33,8 @@ public class DeltaAnalysis {
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException("The configured CodeScene URL isn't valid", e);
         } catch (IOException e) {
-            throw new RemoteAnalysisException("Failed to send request to CodeScene at " + config.codeSceneUrl().toString(), e);
+            throw new RemoteAnalysisException("Failed to send request to CodeScene at " + config.codeSceneUrl().toString()
+                    + "\n  cause: " + e.getMessage(), e);
         }
     }
 
