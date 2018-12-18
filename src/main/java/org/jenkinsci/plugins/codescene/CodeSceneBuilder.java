@@ -525,6 +525,445 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
                     .includeCurrentValue(credentialsId);
         }
 
+        
+
     }
+
+
+        public void nastyIfs() {
+        if (true) {
+            if (false) {
+                if (true) {
+                    if (false) {
+                        if (true) {
+                            if (false) {
+                                if (true) {
+                                    System.out.println("Nasty IFs.");
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+
+        boolean randomTrue = false;
+        if (randomTrue) {
+            if (true) {
+                if (false) {
+                    if (true) {
+                        if (false) {
+                            if (true) {
+                                if (false) {
+                                    if (true) {
+                                        System.out.println("Nasty IFs.");
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (true) {
+            if (false) {
+                if (true) {
+                    if (false) {
+                        if (true) {
+                            if (false) {
+                                if (true) {
+                                    System.out.println("Nasty IFs.");
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+
+        boolean randomTrue = false;
+        if (randomTrue) {
+            if (true) {
+                if (false) {
+                    if (true) {
+                        if (false) {
+                            if (true) {
+                                if (false) {
+                                    if (true) {
+                                        System.out.println("Nasty IFs.");
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (true) {
+            if (false) {
+                if (true) {
+                    if (false) {
+                        if (true) {
+                            if (false) {
+                                if (true) {
+                                    System.out.println("Nasty IFs.");
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+
+        boolean randomTrue = false;
+        if (randomTrue) {
+            if (true) {
+                if (false) {
+                    if (true) {
+                        if (false) {
+                            if (true) {
+                                if (false) {
+                                    if (true) {
+                                        System.out.println("Nasty IFs.");
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (true) {
+            if (false) {
+                if (true) {
+                    if (false) {
+                        if (true) {
+                            if (false) {
+                                if (true) {
+                                    System.out.println("Nasty IFs.");
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+
+        boolean randomTrue = false;
+        if (randomTrue) {
+            if (true) {
+                if (false) {
+                    if (true) {
+                        if (false) {
+                            if (true) {
+                                if (false) {
+                                    if (true) {
+                                        System.out.println("Nasty IFs.");
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (true) {
+            if (false) {
+                if (true) {
+                    if (false) {
+                        if (true) {
+                            if (false) {
+                                if (true) {
+                                    System.out.println("Nasty IFs.");
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+
+        boolean randomTrue = false;
+        if (randomTrue) {
+            if (true) {
+                if (false) {
+                    if (true) {
+                        if (false) {
+                            if (true) {
+                                if (false) {
+                                    if (true) {
+                                        System.out.println("Nasty IFs.");
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (true) {
+            if (false) {
+                if (true) {
+                    if (false) {
+                        if (true) {
+                            if (false) {
+                                if (true) {
+                                    System.out.println("Nasty IFs.");
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+
+        boolean randomTrue = false;
+        if (randomTrue) {
+            if (true) {
+                if (false) {
+                    if (true) {
+                        if (false) {
+                            if (true) {
+                                if (false) {
+                                    if (true) {
+                                        System.out.println("Nasty IFs.");
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (true) {
+            if (false) {
+                if (true) {
+                    if (false) {
+                        if (true) {
+                            if (false) {
+                                if (true) {
+                                    System.out.println("Nasty IFs.");
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+
+        boolean randomTrue = false;
+        if (randomTrue) {
+            if (true) {
+                if (false) {
+                    if (true) {
+                        if (false) {
+                            if (true) {
+                                if (false) {
+                                    if (true) {
+                                        System.out.println("Nasty IFs.");
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (true) {
+            if (false) {
+                if (true) {
+                    if (false) {
+                        if (true) {
+                            if (false) {
+                                if (true) {
+                                    System.out.println("Nasty IFs.");
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+
+        boolean randomTrue = false;
+        if (randomTrue) {
+            if (true) {
+                if (false) {
+                    if (true) {
+                        if (false) {
+                            if (true) {
+                                if (false) {
+                                    if (true) {
+                                        System.out.println("Nasty IFs.");
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (true) {
+            if (false) {
+                if (true) {
+                    if (false) {
+                        if (true) {
+                            if (false) {
+                                if (true) {
+                                    System.out.println("Nasty IFs.");
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+
+        boolean randomTrue = false;
+        if (randomTrue) {
+            if (true) {
+                if (false) {
+                    if (true) {
+                        if (false) {
+                            if (true) {
+                                if (false) {
+                                    if (true) {
+                                        System.out.println("Nasty IFs.");
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (true) {
+            if (false) {
+                if (true) {
+                    if (false) {
+                        if (true) {
+                            if (false) {
+                                if (true) {
+                                    System.out.println("Nasty IFs.");
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+
+        boolean randomTrue = false;
+        if (randomTrue) {
+            if (true) {
+                if (false) {
+                    if (true) {
+                        if (false) {
+                            if (true) {
+                                if (false) {
+                                    if (true) {
+                                        System.out.println("Nasty IFs.");
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (true) {
+            if (false) {
+                if (true) {
+                    if (false) {
+                        if (true) {
+                            if (false) {
+                                if (true) {
+                                    System.out.println("Nasty IFs.");
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+
+        boolean randomTrue = false;
+        if (randomTrue) {
+            if (true) {
+                if (false) {
+                    if (true) {
+                        if (false) {
+                            if (true) {
+                                if (false) {
+                                    if (true) {
+                                        System.out.println("Nasty IFs.");
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (true) {
+            if (false) {
+                if (true) {
+                    if (false) {
+                        if (true) {
+                            if (false) {
+                                if (true) {
+                                    System.out.println("Nasty IFs.");
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+
+        boolean randomTrue = false;
+        if (randomTrue) {
+            if (true) {
+                if (false) {
+                    if (true) {
+                        if (false) {
+                            if (true) {
+                                if (false) {
+                                    if (true) {
+                                        System.out.println("Nasty IFs.");
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 }
 
