@@ -529,6 +529,9 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
 
     }
 
+    public newMethod() {
+      return "nothing";
+    }
 
 
 }
