@@ -81,6 +81,10 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
     // execute the delta analysis. By default we fail the build, but this can be overriden:
     private boolean letBuildPassOnFailedAnalysis = false;
 
+    // Quality Gates
+    private boolean failOnFailedGoal = true;
+    private boolean failOnDecliningCodeHealth = true;
+
     // deprecated authentication params - use credentialsId instead
     @Deprecated private transient String username;
     @Deprecated private transient String password;
@@ -138,6 +142,14 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
         return letBuildPassOnFailedAnalysis;
     }
 
+    public boolean isFailOnFailedGoal() {
+        return failOnFailedGoal;
+    }
+
+    public boolean isFailOnDecliningCodeHealth() {
+        return failOnDecliningCodeHealth;
+    }
+
     @DataBoundSetter
     public void setAnalyzeLatestIndividually(boolean analyzeLatestIndividually) {
         this.analyzeLatestIndividually = analyzeLatestIndividually;
@@ -177,6 +189,13 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
 
     @DataBoundSetter
     public void setLetBuildPassOnFailedAnalysis(boolean letBuildPassOnFailedAnalysis) { this.letBuildPassOnFailedAnalysis = letBuildPassOnFailedAnalysis; }
+
+    @DataBoundSetter
+    public void setFailOnFailedGoal(boolean failOnFailedGoal) { this.failOnFailedGoal = failOnFailedGoal; }
+
+    @DataBoundSetter
+    public void setFailOnDecliningCodeHealth(boolean failOnDecliningCodeHealth) { this.failOnDecliningCodeHealth = failOnDecliningCodeHealth; }
+
 
     // handle default values for new fields with regards to existing jobs (backward compatibility)
     // check https://wiki.jenkins-ci.org/display/JENKINS/Hint+on+retaining+backward+compatibility
@@ -289,7 +308,8 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
             URL url = new URL(deltaAnalysisUrl);
 
             Configuration codesceneConfig = new Configuration(url, userConfig(), new Repository(repository),
-                    couplingThresholdPercent, useBiomarkers, letBuildPassOnFailedAnalysis);
+                    couplingThresholdPercent, useBiomarkers, letBuildPassOnFailedAnalysis, failOnFailedGoal,
+                    failOnDecliningCodeHealth);
             EnvVars env = build.getEnvironment(listener);
 
 
