@@ -25,8 +25,7 @@ public class DeltaAnalysis {
     }
 
     public DeltaAnalysisResult runOn(final Commits commits) throws RemoteAnalysisException {
-        final DeltaAnalysisRequest payload = new DeltaAnalysisRequest(commits, config.gitRepisitoryToAnalyze(),
-                config.couplingThresholdPercent(), config.useBiomarkers());
+        final DeltaAnalysisRequest payload = new DeltaAnalysisRequest(commits, config);
 
         try {
             return synchronousRequestWith(payload, commits);
