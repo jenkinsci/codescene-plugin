@@ -14,15 +14,21 @@ the system. The earlier you can react to any potential finding, the better. That
 CodeScene offers integration points that let you incorporate the analysis
 results into your build pipeline.
 
+## Capabilities, Use Cases, and Examples
+
 This plugin lets you use CodeScene’s Delta Analysis to:
 * Prioritize code reviews based on the risk of the commits.
 * Specify quality gates for the goals specified on identified hotspots (see [Managing Technical Debt](https://empear.com/blog/manage-technical-debt-with-augmented-code-analysis/)).
 * Specify quality gates that trigger in case the Code Health of a hotspot declines.
 
+### Prioritize Pull Requests and Commits to Review
+
 The risk classification is described in detail in CodeScene's documentation. The value goes from 1 (lowest risk) to 10 (a high risk change).
 The plugin can be run on either individual commits or a complete branch:
 
 ![Screenshot](screenshot.png)
+
+### Enable Quality Gates to Supervise Technical Debt
 
 CodeScene's Intelligent Notes concept lets you augment the analysis with your goals and contextual information. For example, you could
 decide that a hotspot might indeed have a high degree of technical debt, but chose to live with it for now. In that case you would tell
@@ -42,6 +48,8 @@ If you don't yet use the Intelligent Notes feature then, well, you really should
 on technical debt in a pro-active rather than reactive way. However, there might be other unsupervised hotspots. You can
 catch a decline in Code Health in that case too by using the second quality gate, "Mark Build as Unstable on Code Health Decline".
 The two quality gates work well together, and we recommend you enable both.
+
+### Get Early Warnings from a Temporal Perspective
 
 In addition to the risk classification and quality gates, CodeScene also runs its set of early warning analyses:
 
