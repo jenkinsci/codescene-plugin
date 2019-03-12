@@ -4,22 +4,46 @@
 [![Latest release](https://img.shields.io/github/release/empear-analytics/codescene-jenkins-plugin.svg)](https://github.com/empear-analytics/codescene-jenkins-plugin/releases/latest)
 
 A jenkins plugin for
-[CodeScene](http://www.empear.com/products/codescene-on-premise/) by Empear.
+[CodeScene](https://empear.com/how-it-works/) by Empear.
 
 Developers, check [internal jenkins plugin documentation](https://github.com/empear-analytics/codescene-docs/blob/master/codescene-jenkins-plugin.md) (private repo).
 
 
-CodeScene detects potential maintenance problems and early warnings in your
-codebase. The earlier you can react to those findings, the better. That’s why
+CodeScene identifies and prioritizes technical debt, while at the same time uncovering and measuring social factors of the organization behind
+the system. The earlier you can react to any potential finding, the better. That’s why
 CodeScene offers integration points that let you incorporate the analysis
 results into your build pipeline.
 
-This plugin lets you use CodeScene’s Delta Analysis to catch potential problems
-before they are delivered to your main branch.
+This plugin lets you use CodeScene’s Delta Analysis to:
+* Prioritize code reviews based on the risk of the commits.
+* Specify quality gates for the goals specified on identified hotspots (see [Managing Technical Debt](https://empear.com/blog/manage-technical-debt-with-augmented-code-analysis/).
+* Specify quality gates that trigger in case the Code Health of a hotspot declines.
+
+The risk classification is described in detail in CodeScene's documentation. The value goes from 1 (lowest risk) to 10 (a high risk change).
+The plugin can be run on either individual commits or a complete branch:
 
 ![Screenshot](screenshot.png)
 
-In addition to the risk classification, CodeScene also runs its set of early warning analyses:
+CodeScene's Intelligent Notes concept lets you augment the analysis with your goals and contextual information. For example, you could
+decide that a hotspot might indeed have a high degree of technical debt, but chose to live with it for now. In that case you would tell
+CodeScene about your decision but ask the tool to supervise the hotspot so that it doesn't get worse.
+With the Jenkins plugin, you could then enforce that goal through a quality gate.
+
+As long as everything evolves according to plan, the plugin will report an OK in its green Quality Gate (QG) indication:
+
+![Pass Quality Gate](pass-quality-gate.png)
+
+However, should one of your goals fail -- e.g. the supervised hotspot grows worse -- then we notify directly in the CI/CD pipeline and
+mark the build as unstable:
+
+![Failed Quality Gate](failed-quality-gate.png)
+
+If you don't yet use the Intelligent Notes feature then, well, you really should -- it's a game changer that lets you take
+on technical debt in a pro-active rather than reactive way. However, there might be other unsupervised hotspots. You can
+catch a decline in Code Health in that case too by using the second quality gate, "Mark Build as Unstable on Code Health Decline".
+The two quality gates work well together, and we recommend you enable both.
+
+In addition to the risk classification and quality gates, CodeScene also runs its set of early warning analyses:
 
 ![EarlyWarning](earlywarning.png)
 
@@ -58,8 +82,9 @@ You can also change the defaults for risk threshold and temporal coupling thresh
 * *Risk Threshold*: commits with risk equal or higher than this value will make a build unstable
 * *Temporal Coupling Threshold*: minimum temporal coupling for "Absence of Expected Change Pattern" warning
 
-By checking the _**Use Biomarkers**_ option, CodeScene lets you auto-detect files that seem to degrade in quality through issues introduced in the current changeset.
-Biomarkers can be used since the CodeScene 2.4.0 version.
+By checking the _**Use Biomarkers**_ option, CodeScene warns about files that seem to degrade in quality through issues introduced in the current changeset.
+
+Finally, you enable the Quality Gates in the configuration too.
 
 #### CodeScene API Configuration
 
@@ -72,6 +97,8 @@ Check [Injecting Secrets into Jenkins Build Jobs](https://support.cloudbees.com/
 
 ## Changelog
 
+* 1.2.3
+ * Introduce optional quality gates based on CodeScene's [Intelligent Notes](https://empear.com/blog/manage-technical-debt-with-augmented-code-analysis/).
 * 1.1.4
  * Reverse the previously added configuration option so that a user explicitly has to allow an analysis failure to pass the build.
 * 1.1.3
