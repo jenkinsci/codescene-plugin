@@ -14,17 +14,15 @@ public class DeltaAnalysisRequestTest {
     private static final Repository GIT_REPO = new Repository("codescene-ui");
     private static final int COUPLING_THRESHOLD = 65;
 
+    private String useBiomarkers = ""; // emulate named parameters to get more calling context
+
     @Test
     public void serializesRequestAsJson() {
         final DeltaAnalysisRequest request = new DeltaAnalysisRequest(
                 Commits.from(new Commit("b75943ac51bf48ff5a206f0854ace2b67734ea66")),
                 userConfigFrom(GIT_REPO, COUPLING_THRESHOLD, true));
 
-        assertEquals("{\"commits\":[\"b75943ac51bf48ff5a206f0854ace2b67734ea66\"]," +
-                        "\"repository\":\"codescene-ui\"," +
-                        "\"coupling_threshold_percent\":65," +
-                        "\"use_biomarkers\":true}",
-                request.asJson().toString());
+        assertEqualPayload("{\"commits\":[\"b75943ac51bf48ff5a206f0854ace2b67734ea66\"],", useBiomarkers = "true", request);
     }
 
     @Test
@@ -33,10 +31,16 @@ public class DeltaAnalysisRequestTest {
                 Commits.from(new Commit("b75943ac5"), new Commit("9822ac")),
                 userConfigFrom(GIT_REPO, COUPLING_THRESHOLD, false));
 
-        assertEquals("{\"commits\":[\"b75943ac5\",\"9822ac\"]," +
+        assertEqualPayload("{\"commits\":[\"b75943ac5\",\"9822ac\"],", useBiomarkers = "false", request);
+    }
+
+    private static void assertEqualPayload(final String serializedCommits,
+                                           final String enabledBiomarkers,
+                                           final DeltaAnalysisRequest request) {
+        assertEquals(serializedCommits +
                         "\"repository\":\"codescene-ui\"," +
                         "\"coupling_threshold_percent\":65," +
-                        "\"use_biomarkers\":false}",
+                        "\"use_biomarkers\":" + enabledBiomarkers + "}",
                 request.asJson().toString());
     }
 
