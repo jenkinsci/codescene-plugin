@@ -76,4 +76,12 @@ public class CodeSceneBuildActionEntry {
     }
 
     public QualityGates gates() { return this.qualityGatesState; }
+
+    public boolean getGoalHasFailed() {
+        return qualityGatesState.goalHasFailed();
+    }
+
+    public boolean getCodeHealthDeclined() {
+        return qualityGatesState.codeHealthDeclined();
+    }
 }

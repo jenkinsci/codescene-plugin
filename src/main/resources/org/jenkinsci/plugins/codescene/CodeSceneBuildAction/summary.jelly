@@ -114,6 +114,10 @@
                 color: #fe6849;
                 font-weight: bold;
             }
+            .codescene-delta-analysis-action p.fails-quality-gate {
+                color: #fe6849;
+                font-weight: bold;
+            }
 
         </style>
         <div class="codescene-delta-analysis-action">
@@ -144,6 +148,14 @@
                     </div>
 
                     <div class="body">
+
+                        <j:if test="${entry.goalHasFailed}">
+                            <p class="fails-quality-gate">Failed Quality Gate: a goal -- as defined by CodeScene's Intelligent Notes -- is violated. Check the details below.</p>
+                        </j:if>
+
+                        <j:if test="${entry.codeHealthDeclined}">
+                            <p class="fails-quality-gate">Failed Quality Gate: the code degrades in health. Check the details below.</p>
+                        </j:if>
 
                         <j:if test="${entry.hitsRiskThreshold}">
                             <p class="hits-risk-threshold">This delta hit the configured risk threshold of ${entry.riskThreshold}.</p>
