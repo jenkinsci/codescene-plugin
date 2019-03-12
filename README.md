@@ -21,7 +21,7 @@ This plugin lets you use CodeScene’s Delta Analysis to:
 * Specify quality gates for the goals specified on identified hotspots (see [Managing Technical Debt](https://empear.com/blog/manage-technical-debt-with-augmented-code-analysis/)).
 * Specify quality gates that trigger in case the Code Health of a hotspot declines.
 
-### Prioritize Pull Requests and Commits to Review
+### Prioritize Pull Requests and Commits for Code Reviews
 
 The risk classification is described in detail in CodeScene's documentation. The value goes from 1 (lowest risk) to 10 (a high risk change).
 The plugin can be run on either individual commits or a complete branch:
