@@ -76,7 +76,7 @@ public class DeltaAnalysis {
         final JsonReader reader = Json.createReader(responseBody.getContent());
         final JsonObject delta = reader.readObject();
 
-        return new DeltaAnalysisResult(commits, delta);
+        return new DeltaAnalysisResult(commits, config, delta);
     }
 
     private HttpPost createRequestFor(final DeltaAnalysisRequest payload) throws URISyntaxException {

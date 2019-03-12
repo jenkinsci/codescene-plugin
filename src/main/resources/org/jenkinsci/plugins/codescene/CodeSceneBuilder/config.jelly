@@ -35,10 +35,10 @@
 
     <f:section title="Quality Gates">
 
-      <f:optionalBlock field="failOnFailedGoal" title="Fail Build on Failed Goals " inline="true" default="true" checked="${it.failOnFailedGoal}">
+      <f:optionalBlock field="failOnFailedGoal" title="Mark Build as Unstable on Failed Goals " inline="true" default="true" checked="${it.failOnFailedGoal}">
       </f:optionalBlock>
 
-      <f:optionalBlock field="failOnDecliningCodeHealth" title="Fail Build on Code Health Decline" inline="true" default="false" checked="${it.failOnDecliningCodeHealth}">
+      <f:optionalBlock field="failOnDecliningCodeHealth" title="Mark Build as Unstable on Code Health Decline" inline="true" default="false" checked="${it.failOnDecliningCodeHealth}">
       </f:optionalBlock>
 
     </f:section>

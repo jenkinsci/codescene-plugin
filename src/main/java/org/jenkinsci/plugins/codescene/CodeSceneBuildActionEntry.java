@@ -1,9 +1,6 @@
 package org.jenkinsci.plugins.codescene;
 
-import org.jenkinsci.plugins.codescene.Domain.Commit;
-import org.jenkinsci.plugins.codescene.Domain.RiskClassification;
-import org.jenkinsci.plugins.codescene.Domain.RiskDescription;
-import org.jenkinsci.plugins.codescene.Domain.Warning;
+import org.jenkinsci.plugins.codescene.Domain.*;
 
 import java.net.URL;
 import java.util.List;
@@ -17,6 +14,7 @@ public class CodeSceneBuildActionEntry {
     private final URL viewUrl;
     private final int riskThreshold;
     private final RiskDescription description;
+    private final QualityGates qualityGatesState;
 
     public CodeSceneBuildActionEntry(
             String title,
@@ -26,7 +24,8 @@ public class CodeSceneBuildActionEntry {
             List<Warning> warnings,
             URL viewUrl,
             int riskThreshold,
-            RiskDescription description) {
+            RiskDescription description,
+            QualityGates qualityGatesState) {
         this.title = title;
         this.showCommits = showCommits;
         this.commits = commits;
@@ -35,6 +34,7 @@ public class CodeSceneBuildActionEntry {
         this.viewUrl = viewUrl;
         this.riskThreshold = riskThreshold;
         this.description = description;
+        this.qualityGatesState = qualityGatesState;
     }
 
     public String getTitle() {
@@ -74,4 +74,6 @@ public class CodeSceneBuildActionEntry {
     public boolean getHitsRiskThreshold() {
         return risk.getValue() >= riskThreshold;
     }
+
+    public QualityGates gates() { return this.qualityGatesState; }
 }

@@ -11,8 +11,9 @@ public class DeltaAnalysisResult {
     private final RiskClassification risk;
     private final Warnings warnings;
     private final RiskDescription description;
+    private final QualityGates gates;
 
-    public DeltaAnalysisResult(final Commits commits, final JsonObject result) {
+    public DeltaAnalysisResult(final Commits commits, final Configuration userConfig, final JsonObject result) {
         ensureTheVersionIsSupported(result);
 
         final JsonObject deltaResult = result.getJsonObject("result");
@@ -22,6 +23,15 @@ public class DeltaAnalysisResult {
         warnings = warningsFrom(deltaResult);
         description = descriptionOfRiskFrom(deltaResult, versionOf(result));
         this.commits = commits;
+        gates = triggeredQualityGatesFrom(deltaResult, userConfig);
+    }
+
+    private QualityGates triggeredQualityGatesFrom(JsonObject deltaResult, final Configuration userConfig) {
+        if (deltaResult.containsKey("quality-gates")) {
+            return new QualityGates(deltaResult.getJsonObject("quality-gates"), userConfig);
+        }
+
+        return QualityGates.none();
     }
 
     private RiskClassification riskFrom(JsonObject deltaResult) {
@@ -89,4 +99,6 @@ public class DeltaAnalysisResult {
     public Warnings getWarnings() {
         return warnings;
     }
+
+    public QualityGates qualityGatesState() { return gates; }
 }
