@@ -84,4 +84,8 @@ public class CodeSceneBuildActionEntry {
     public boolean getCodeHealthDeclined() {
         return qualityGatesState.codeHealthDeclined();
     }
+
+    public boolean getQualityGatesEnabled() {
+        return qualityGatesState.enabled();
+    }
 }

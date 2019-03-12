@@ -67,6 +67,39 @@
                 font-weight: bold;
             }
 
+            .codescene-delta-analysis-action .quality-gate {
+                position: absolute;
+                top: 0;
+                left: 50px;
+                padding: 0 10px;
+                text-align: center;
+                background: #59b300;
+                color: #333;
+                height: 50px;
+                width: 50px;
+            }
+            .codescene-delta-analysis-action .quality-gate.fails-quality-gate {
+                background: #fe6849;
+            }
+
+            .codescene-delta-analysis-action .quality-gate h4 {
+                margin: 8px 0 0;
+                text-align: center;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                font-size: 10px;
+                font-weight: bold;
+                line-height: 16px;
+                color: inherit;
+            }
+
+            .codescene-delta-analysis-action .quality-gate .value {
+                display: block;
+                font-size: 150%;
+                line-height: 18px;
+                font-weight: bold;
+            }
+
             .codescene-delta-analysis-action .entry .body {
                 padding: 20px 20px 20px;
             }
@@ -145,6 +178,20 @@
                                 <span class="value">${entry.risk.value}</span>
                             </div>
                         </j:if>
+
+                        <j:if test="${entry.goalHasFailed || entry.codeHealthDeclined}">
+                           <div class="quality-gate fails-quality-gate">
+                                <h4>Fail</h4>
+                                <span class="value">QG</span>
+                            </div>
+                        </j:if>
+                        <j:if test="${entry.qualityGatesEnabled and (!entry.goalHasFailed || !entry.codeHealthDeclined)}">
+                           <div class="quality-gate">
+                                <h4>OK</h4>
+                                <span class="value">QG</span>
+                            </div>
+                        </j:if>
+
                     </div>
 
                     <div class="body">

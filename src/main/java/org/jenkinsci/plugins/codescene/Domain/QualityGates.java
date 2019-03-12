@@ -5,6 +5,7 @@ import javax.json.JsonObject;
 public class QualityGates {
     private boolean goalHasFailed = false;
     private boolean codeHealthDeclined = false;
+    private boolean gatesEnabled = false;
 
     public QualityGates(final JsonObject gatesField, final Configuration userConfig) {
         if (null == gatesField) {
@@ -13,11 +14,13 @@ public class QualityGates {
 
         goalHasFailed = userConfig.failOnFailedGoal() && gatesField.getBoolean("degrades-in-code-health");
         codeHealthDeclined = userConfig.failOnDecliningCodeHealth() && gatesField.getBoolean("violates-goal");
+        gatesEnabled = userConfig.failOnFailedGoal() || userConfig.failOnDecliningCodeHealth();
     }
 
     private QualityGates(boolean enableFailedGoalGate, boolean enableCodeHealthGate) {
         this.goalHasFailed = enableFailedGoalGate;
         this.codeHealthDeclined = enableCodeHealthGate;
+        this.gatesEnabled = false;
     }
 
     public static QualityGates none() {
@@ -31,4 +34,6 @@ public class QualityGates {
     public boolean codeHealthDeclined() {
         return codeHealthDeclined;
     }
+
+    public boolean enabled() { return gatesEnabled; }
 }
