@@ -30,15 +30,7 @@ import jenkins.model.Jenkins;
 import jenkins.tasks.SimpleBuildStep;
 import net.sf.json.JSONObject;
 import org.jenkinsci.Symbol;
-import org.jenkinsci.plugins.codescene.Domain.Branch;
-import org.jenkinsci.plugins.codescene.Domain.CodeSceneUser;
-import org.jenkinsci.plugins.codescene.Domain.Commit;
-import org.jenkinsci.plugins.codescene.Domain.CommitRange;
-import org.jenkinsci.plugins.codescene.Domain.Commits;
-import org.jenkinsci.plugins.codescene.Domain.Configuration;
-import org.jenkinsci.plugins.codescene.Domain.DeltaAnalysisResult;
-import org.jenkinsci.plugins.codescene.Domain.RemoteAnalysisException;
-import org.jenkinsci.plugins.codescene.Domain.Repository;
+import org.jenkinsci.plugins.codescene.Domain.*;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
@@ -80,6 +72,10 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
     // Some users prefer their builds to continue even if CodeScene -- for some reason -- fail to
     // execute the delta analysis. By default we fail the build, but this can be overriden:
     private boolean letBuildPassOnFailedAnalysis = false;
+
+    // Quality Gates
+    private boolean failOnFailedGoal = true;
+    private boolean failOnDecliningCodeHealth = true;
 
     // deprecated authentication params - use credentialsId instead
     @Deprecated private transient String username;
@@ -138,6 +134,14 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
         return letBuildPassOnFailedAnalysis;
     }
 
+    public boolean isFailOnFailedGoal() {
+        return failOnFailedGoal;
+    }
+
+    public boolean isFailOnDecliningCodeHealth() {
+        return failOnDecliningCodeHealth;
+    }
+
     @DataBoundSetter
     public void setAnalyzeLatestIndividually(boolean analyzeLatestIndividually) {
         this.analyzeLatestIndividually = analyzeLatestIndividually;
@@ -178,6 +182,13 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
     @DataBoundSetter
     public void setLetBuildPassOnFailedAnalysis(boolean letBuildPassOnFailedAnalysis) { this.letBuildPassOnFailedAnalysis = letBuildPassOnFailedAnalysis; }
 
+    @DataBoundSetter
+    public void setFailOnFailedGoal(boolean failOnFailedGoal) { this.failOnFailedGoal = failOnFailedGoal; }
+
+    @DataBoundSetter
+    public void setFailOnDecliningCodeHealth(boolean failOnDecliningCodeHealth) { this.failOnDecliningCodeHealth = failOnDecliningCodeHealth; }
+
+
     // handle default values for new fields with regards to existing jobs (backward compatibility)
     // check https://wiki.jenkins-ci.org/display/JENKINS/Hint+on+retaining+backward+compatibility
     protected Object readResolve() {
@@ -212,7 +223,7 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
             listener.getLogger().format("Starting delta analysis on %d commit(s)...%n", commitSets.size());
             for (Commits commits : commitSets) {
                 DeltaAnalysis deltaAnalysis = new DeltaAnalysis(config);
-                listener.getLogger().format("Running delta analysis on commits (%s) in repository %s.%n", commits.value(), config.gitRepisitoryToAnalyze().value());
+                listener.getLogger().format("Running delta analysis on commits (%s) in repository %s.%n", commits.value(), config.gitRepositoryToAnalyze().value());
                 DeltaAnalysisResult result = deltaAnalysis.runOn(commits);
 
                 URL detailsUrl = new URL(
@@ -229,7 +240,8 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
                         result.getWarnings().value(),
                         detailsUrl,
                         riskThreshold,
-                        result.getRiskDescription()));
+                        result.getRiskDescription(),
+                        result.qualityGatesState()));
             }
         } else {
             listener.getLogger().format("No commits to run delta analysis on.%n");
@@ -242,7 +254,7 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
             throws RemoteAnalysisException, MalformedURLException {
         Commits commitSet = revisionsAsCommitSet(revisions);
         DeltaAnalysis deltaAnalysis = new DeltaAnalysis(config);
-        listener.getLogger().format("Running delta analysis on branch %s in repository %s.%n", branchName, config.gitRepisitoryToAnalyze().value());
+        listener.getLogger().format("Running delta analysis on branch %s in repository %s.%n", branchName, config.gitRepositoryToAnalyze().value());
         DeltaAnalysisResult result = deltaAnalysis.runOn(commitSet);
 
         URL detailsUrl = new URL(
@@ -259,7 +271,8 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
                 result.getWarnings().value(),
                 detailsUrl,
                 riskThreshold,
-                result.getRiskDescription());
+                result.getRiskDescription(),
+                result.qualityGatesState());
     }
 
     /**
@@ -289,7 +302,8 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
             URL url = new URL(deltaAnalysisUrl);
 
             Configuration codesceneConfig = new Configuration(url, userConfig(), new Repository(repository),
-                    couplingThresholdPercent, useBiomarkers, letBuildPassOnFailedAnalysis);
+                    couplingThresholdPercent, useBiomarkers, letBuildPassOnFailedAnalysis, failOnFailedGoal,
+                    failOnDecliningCodeHealth);
             EnvVars env = build.getEnvironment(listener);
 
 
@@ -327,7 +341,11 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
                     "and base revision '%s'.", branch, baseRevision));
         } else {
             CodeSceneBuildActionEntry entry = runDeltaAnalysisOnBranchDiff(codesceneConfig, revisions, branch, listener);
+
+            markAsUnstableWhenFailedGoal(entry, build, listener);
+            markAsUnstableWhenCodeHealthDeclines(entry, build, listener);
             markAsUnstableWhenAtRiskThreshold(riskThreshold, entry, build, listener);
+
             build.addAction(new CodeSceneBuildAction("Delta - By Branch", singletonList(entry)));
         }
     }
@@ -341,6 +359,8 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
         } else {
             ArrayList<CodeSceneBuildActionEntry> entries = runDeltaAnalysesOnIndividualCommits(codesceneConfig, revisions, listener);
             for (CodeSceneBuildActionEntry entry : entries) {
+                markAsUnstableWhenFailedGoal(entry, build, listener);
+                markAsUnstableWhenCodeHealthDeclines(entry, build, listener);
                 markAsUnstableWhenAtRiskThreshold(riskThreshold, entry, build, listener);
             }
             build.addAction(new CodeSceneBuildAction("Delta - Individual Commits", entries));
@@ -380,18 +400,44 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
         return CredentialsMatchers.firstOrNull(credentials, matcher);
     }
 
-    private void markAsUnstableWhenAtRiskThreshold(int threshold, CodeSceneBuildActionEntry entry, Run<?, ?> build, TaskListener listener) throws IOException {
+
+    private static void marktBuildAsUnstable(Run<?, ?> build) {
+        final Result newResult = Result.UNSTABLE;
+
+        final Result result = build.getResult();
+        if (result != null) {
+            build.setResult(result.combine(newResult));
+        } else {
+            build.setResult(newResult);
+        }
+    }
+
+    private static void markAsUnstableWhenFailedGoal(CodeSceneBuildActionEntry entry, Run<?, ?> build, TaskListener listener) {
+        final QualityGates gates = entry.gates();
+
+        if (gates.goalHasFailed()) {
+            String link = HyperlinkNote.encodeTo(entry.getViewUrl().toExternalForm(), "Failed Quality Gate");
+            listener.error("%s : the analysis detects a failed goal. Marking build as unstable.", link);
+            marktBuildAsUnstable(build);
+        }
+    }
+
+
+    private static void markAsUnstableWhenCodeHealthDeclines(CodeSceneBuildActionEntry entry, Run<?, ?> build, TaskListener listener) {
+        final QualityGates gates = entry.gates();
+
+        if (gates.codeHealthDeclined()) {
+            String link = HyperlinkNote.encodeTo(entry.getViewUrl().toExternalForm(), "Failed Quality Gate");
+            listener.error("%s : the analysis detects a decline in Code Health. Marking build as unstable.", link);
+            marktBuildAsUnstable(build);
+        }
+    }
+
+    private void markAsUnstableWhenAtRiskThreshold(int threshold, CodeSceneBuildActionEntry entry, Run<?, ?> build, TaskListener listener) {
         if (isMarkBuildAsUnstable() && entry.getHitsRiskThreshold()) {
             String link = HyperlinkNote.encodeTo(entry.getViewUrl().toExternalForm(), format("Delta analysis result with risk %d", entry.getRisk().getValue()));
             listener.error("%s hits the risk threshold (%d). Marking build as unstable.", link, threshold);
-            Result newResult = Result.UNSTABLE;
-
-            Result result = build.getResult();
-            if (result != null) {
-                build.setResult(result.combine(newResult));
-            } else {
-                build.setResult(newResult);
-            }
+            marktBuildAsUnstable(build);
         }
     }
 

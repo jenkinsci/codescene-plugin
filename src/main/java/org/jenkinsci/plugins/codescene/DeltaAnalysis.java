@@ -25,8 +25,7 @@ public class DeltaAnalysis {
     }
 
     public DeltaAnalysisResult runOn(final Commits commits) throws RemoteAnalysisException {
-        final DeltaAnalysisRequest payload = new DeltaAnalysisRequest(commits, config.gitRepisitoryToAnalyze(),
-                config.couplingThresholdPercent(), config.useBiomarkers());
+        final DeltaAnalysisRequest payload = new DeltaAnalysisRequest(commits, config);
 
         try {
             return synchronousRequestWith(payload, commits);
@@ -77,7 +76,7 @@ public class DeltaAnalysis {
         final JsonReader reader = Json.createReader(responseBody.getContent());
         final JsonObject delta = reader.readObject();
 
-        return new DeltaAnalysisResult(commits, delta);
+        return new DeltaAnalysisResult(commits, config, delta);
     }
 
     private HttpPost createRequestFor(final DeltaAnalysisRequest payload) throws URISyntaxException {

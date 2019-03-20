@@ -33,6 +33,16 @@
         
     </f:section>
 
+    <f:section title="Quality Gates">
+
+      <f:optionalBlock field="failOnFailedGoal" title="Mark Build as Unstable on Failed Goals " inline="true" default="true" checked="${it.failOnFailedGoal}">
+      </f:optionalBlock>
+
+      <f:optionalBlock field="failOnDecliningCodeHealth" title="Mark Build as Unstable on Code Health Decline" inline="true" default="false" checked="${it.failOnDecliningCodeHealth}">
+      </f:optionalBlock>
+
+    </f:section>
+
     <f:section title="CodeScene API Configuration">
         <f:entry field="credentialsId" title="${%Credentials}" value="${it.credentialsId}">
             <c:select/>
