@@ -60,7 +60,7 @@ public class CodeSceneBuildActionEntry {
     }
 
     public boolean getHasWarnings() {
-        return !warnings.isEmpty();
+        return warnings != null && !warnings.isEmpty();
     }
 
     public URL getViewUrl() {
@@ -72,20 +72,20 @@ public class CodeSceneBuildActionEntry {
     }
 
     public boolean getHitsRiskThreshold() {
-        return risk.getValue() >= riskThreshold;
+        return risk != null && risk.getValue() >= riskThreshold;
     }
 
     public QualityGates gates() { return this.qualityGatesState; }
 
     public boolean getGoalHasFailed() {
-        return qualityGatesState.goalHasFailed();
+        return qualityGatesState != null && qualityGatesState.goalHasFailed();
     }
 
     public boolean getCodeHealthDeclined() {
-        return qualityGatesState.codeHealthDeclined();
+        return qualityGatesState != null && qualityGatesState.codeHealthDeclined();
     }
 
     public boolean getQualityGatesEnabled() {
-        return qualityGatesState.enabled();
+        return qualityGatesState != null && qualityGatesState.enabled();
     }
 }
