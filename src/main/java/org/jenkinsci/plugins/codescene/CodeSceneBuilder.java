@@ -223,7 +223,7 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
             listener.getLogger().format("Starting delta analysis on %d commit(s)...%n", commitSets.size());
             for (Commits commits : commitSets) {
                 DeltaAnalysis deltaAnalysis = new DeltaAnalysis(config);
-                listener.getLogger().format("Running delta analysis on commits (%s) in repository %s.%n", commits.value(), config.gitRepisitoryToAnalyze().value());
+                listener.getLogger().format("Running delta analysis on commits (%s) in repository %s.%n", commits.value(), config.gitRepositoryToAnalyze().value());
                 DeltaAnalysisResult result = deltaAnalysis.runOn(commits);
 
                 URL detailsUrl = new URL(
@@ -254,7 +254,7 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
             throws RemoteAnalysisException, MalformedURLException {
         Commits commitSet = revisionsAsCommitSet(revisions);
         DeltaAnalysis deltaAnalysis = new DeltaAnalysis(config);
-        listener.getLogger().format("Running delta analysis on branch %s in repository %s.%n", branchName, config.gitRepisitoryToAnalyze().value());
+        listener.getLogger().format("Running delta analysis on branch %s in repository %s.%n", branchName, config.gitRepositoryToAnalyze().value());
         DeltaAnalysisResult result = deltaAnalysis.runOn(commitSet);
 
         URL detailsUrl = new URL(

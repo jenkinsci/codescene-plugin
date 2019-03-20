@@ -36,7 +36,7 @@ public class Configuration {
         return user;
     }
 
-    public Repository gitRepisitoryToAnalyze() {
+    public Repository gitRepositoryToAnalyze() {
         return repo;
     }
 

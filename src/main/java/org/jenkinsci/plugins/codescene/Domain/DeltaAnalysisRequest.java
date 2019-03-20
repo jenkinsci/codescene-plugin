@@ -12,7 +12,7 @@ public class DeltaAnalysisRequest {
 
         JsonObjectBuilder b = Json.createObjectBuilder();
         b.add("commits", cs);
-        b.add("repository", userConfig.gitRepisitoryToAnalyze().value());
+        b.add("repository", userConfig.gitRepositoryToAnalyze().value());
         b.add("coupling_threshold_percent", userConfig.couplingThresholdPercent());
         b.add("use_biomarkers", enableBiomarkersDependingOn(userConfig));
 
