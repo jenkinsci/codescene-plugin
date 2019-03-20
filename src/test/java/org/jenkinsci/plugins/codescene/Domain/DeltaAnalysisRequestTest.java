@@ -1,6 +1,5 @@
 package org.jenkinsci.plugins.codescene.Domain;
 
-import org.apache.commons.jelly.tags.fmt.Config;
 import org.apache.mina.core.RuntimeIoException;
 import org.junit.Test;
 
@@ -14,17 +13,11 @@ public class DeltaAnalysisRequestTest {
     private static final Repository GIT_REPO = new Repository("codescene-ui");
     private static final int COUPLING_THRESHOLD = 65;
 
-    // emulate named parameters to get more calling context
-    private String useBiomarkers = "";
-    private boolean enableUserBiomarkers = false;
-    private static boolean enableFailedGoalGate = false;
-    private static boolean enableCodeHealthGate = false;
-
     @Test
     public void serializesRequestAsJson() {
         final DeltaAnalysisRequest request = new DeltaAnalysisRequest(
                 Commits.from(new Commit("b75943ac51bf48ff5a206f0854ace2b67734ea66")),
-                userConfigFrom(GIT_REPO, COUPLING_THRESHOLD, enableUserBiomarkers = true));
+                userConfigFrom(true));
 
         assertEqualPayload("{\"commits\":[\"b75943ac51bf48ff5a206f0854ace2b67734ea66\"],", "true", request);
     }
@@ -33,57 +26,45 @@ public class DeltaAnalysisRequestTest {
     public void serializesRequestWithMultipleCommitsAsJson() {
         final DeltaAnalysisRequest request = new DeltaAnalysisRequest(
                 Commits.from(new Commit("b75943ac5"), new Commit("9822ac")),
-                userConfigFrom(GIT_REPO, COUPLING_THRESHOLD, enableUserBiomarkers = false));
+                userConfigFrom(false));
 
-        assertEqualPayload("{\"commits\":[\"b75943ac5\",\"9822ac\"],", useBiomarkers = "false", request);
+        assertEqualPayload("{\"commits\":[\"b75943ac5\",\"9822ac\"],", "false", request);
     }
 
     @Test
     public void enablesBiomarkersWhenFailedGoalGateEnabled() {
         final DeltaAnalysisRequest request = new DeltaAnalysisRequest(
                 Commits.from(new Commit("b75943ac51bf48ff5a206f0854ace2b67734ea66")),
-                userConfigFrom(GIT_REPO, COUPLING_THRESHOLD,
-                        enableUserBiomarkers = false,
-                        enableFailedGoalGate = true,
-                        enableCodeHealthGate = false));
+                userConfigFrom(false, true, false));
 
-        assertEqualPayload("{\"commits\":[\"b75943ac51bf48ff5a206f0854ace2b67734ea66\"],", useBiomarkers = "true", request);
+        assertEqualPayload("{\"commits\":[\"b75943ac51bf48ff5a206f0854ace2b67734ea66\"],", "true", request);
     }
 
     @Test
     public void enablesBiomarkersWhenDecliningCodeHealthGateEnabled() {
         final DeltaAnalysisRequest request = new DeltaAnalysisRequest(
                 Commits.from(new Commit("b75943ac51bf48ff5a206f0854ace2b67734ea66")),
-                userConfigFrom(GIT_REPO, COUPLING_THRESHOLD,
-                        enableUserBiomarkers = false,
-                        enableFailedGoalGate = false,
-                        enableCodeHealthGate = true));
+                userConfigFrom(false, false, true));
 
-        assertEqualPayload("{\"commits\":[\"b75943ac51bf48ff5a206f0854ace2b67734ea66\"],", useBiomarkers = "true", request);
+        assertEqualPayload("{\"commits\":[\"b75943ac51bf48ff5a206f0854ace2b67734ea66\"],", "true", request);
     }
 
     @Test
     public void enablesBiomarkersWhenAllGatesEnabled() {
         final DeltaAnalysisRequest request = new DeltaAnalysisRequest(
                 Commits.from(new Commit("b75943ac51bf48ff5a206f0854ace2b67734ea66")),
-                userConfigFrom(GIT_REPO, COUPLING_THRESHOLD,
-                        enableUserBiomarkers = false,
-                        enableFailedGoalGate = true,
-                        enableCodeHealthGate = true));
+                userConfigFrom(false, true, true));
 
-        assertEqualPayload("{\"commits\":[\"b75943ac51bf48ff5a206f0854ace2b67734ea66\"],", useBiomarkers = "true", request);
+        assertEqualPayload("{\"commits\":[\"b75943ac51bf48ff5a206f0854ace2b67734ea66\"],", "true", request);
     }
 
     @Test
     public void enablesBiomarkersWhenRequestedTogetherWithAllGatesEnabled() {
         final DeltaAnalysisRequest request = new DeltaAnalysisRequest(
                 Commits.from(new Commit("b75943ac51bf48ff5a206f0854ace2b67734ea66")),
-                userConfigFrom(GIT_REPO, COUPLING_THRESHOLD,
-                        enableUserBiomarkers = true,
-                        enableFailedGoalGate = true,
-                        enableCodeHealthGate = true));
+                userConfigFrom(true, true, true));
 
-        assertEqualPayload("{\"commits\":[\"b75943ac51bf48ff5a206f0854ace2b67734ea66\"],", useBiomarkers = "true", request);
+        assertEqualPayload("{\"commits\":[\"b75943ac51bf48ff5a206f0854ace2b67734ea66\"],", "true", request);
     }
 
     private static void assertEqualPayload(final String serializedCommits,
@@ -96,28 +77,18 @@ public class DeltaAnalysisRequestTest {
                 request.asJson().toString());
     }
 
-    private static Configuration userConfigFrom(
-            Repository repo,
-            int couplingThreshold,
-            boolean useBiomarkers)
-    {
-        return userConfigFrom(repo, couplingThreshold, useBiomarkers, enableFailedGoalGate = false, enableCodeHealthGate = false);
+    private static Configuration userConfigFrom(boolean useBiomarkers) {
+        return userConfigFrom(useBiomarkers, false, false);
     }
 
-    private static Configuration userConfigFrom(
-            Repository repo,
-            int couplingThreshold,
-            boolean useBiomarkers,
-            boolean failOnFailedGoal,
-            boolean failOnDecliningCodeHealth) {
+    private static Configuration userConfigFrom(boolean useBiomarkers, boolean failOnFailedGoal, boolean failOnDecliningCodeHealth) {
         final boolean letBuildPassOnFailedAnalysis = false;
-
         try {
             return new Configuration(
                     new URL("https://empear.com/"),
                     new CodeSceneUser("CodeScene user name", "hashed"),
-                    repo,
-                    couplingThreshold,
+                    DeltaAnalysisRequestTest.GIT_REPO,
+                    DeltaAnalysisRequestTest.COUPLING_THRESHOLD,
                     useBiomarkers,
                     letBuildPassOnFailedAnalysis,
                     failOnFailedGoal,
