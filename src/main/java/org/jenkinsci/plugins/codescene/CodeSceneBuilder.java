@@ -400,52 +400,44 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
         return CredentialsMatchers.firstOrNull(credentials, matcher);
     }
 
-    private void markAsUnstableWhenFailedGoal(CodeSceneBuildActionEntry entry, Run<?, ?> build, TaskListener listener) throws IOException {
+
+    private static void marktBuildAsUnstable(Run<?, ?> build) {
+        final Result newResult = Result.UNSTABLE;
+
+        final Result result = build.getResult();
+        if (result != null) {
+            build.setResult(result.combine(newResult));
+        } else {
+            build.setResult(newResult);
+        }
+    }
+
+    private static void markAsUnstableWhenFailedGoal(CodeSceneBuildActionEntry entry, Run<?, ?> build, TaskListener listener) {
         final QualityGates gates = entry.gates();
 
         if (gates.goalHasFailed()) {
             String link = HyperlinkNote.encodeTo(entry.getViewUrl().toExternalForm(), "Failed Quality Gate");
             listener.error("%s : the analysis detects a failed goal. Marking build as unstable.", link);
-            Result newResult = Result.UNSTABLE;
-
-            Result result = build.getResult();
-            if (result != null) {
-                build.setResult(result.combine(newResult));
-            } else {
-                build.setResult(newResult);
-            }
+            marktBuildAsUnstable(build);
         }
     }
 
-    private void markAsUnstableWhenCodeHealthDeclines(CodeSceneBuildActionEntry entry, Run<?, ?> build, TaskListener listener) throws IOException {
+
+    private static void markAsUnstableWhenCodeHealthDeclines(CodeSceneBuildActionEntry entry, Run<?, ?> build, TaskListener listener) {
         final QualityGates gates = entry.gates();
 
         if (gates.codeHealthDeclined()) {
             String link = HyperlinkNote.encodeTo(entry.getViewUrl().toExternalForm(), "Failed Quality Gate");
             listener.error("%s : the analysis detects a decline in Code Health. Marking build as unstable.", link);
-            Result newResult = Result.UNSTABLE;
-
-            Result result = build.getResult();
-            if (result != null) {
-                build.setResult(result.combine(newResult));
-            } else {
-                build.setResult(newResult);
-            }
+            marktBuildAsUnstable(build);
         }
     }
 
-    private void markAsUnstableWhenAtRiskThreshold(int threshold, CodeSceneBuildActionEntry entry, Run<?, ?> build, TaskListener listener) throws IOException {
+    private void markAsUnstableWhenAtRiskThreshold(int threshold, CodeSceneBuildActionEntry entry, Run<?, ?> build, TaskListener listener) {
         if (isMarkBuildAsUnstable() && entry.getHitsRiskThreshold()) {
             String link = HyperlinkNote.encodeTo(entry.getViewUrl().toExternalForm(), format("Delta analysis result with risk %d", entry.getRisk().getValue()));
             listener.error("%s hits the risk threshold (%d). Marking build as unstable.", link, threshold);
-            Result newResult = Result.UNSTABLE;
-
-            Result result = build.getResult();
-            if (result != null) {
-                build.setResult(result.combine(newResult));
-            } else {
-                build.setResult(newResult);
-            }
+            marktBuildAsUnstable(build);
         }
     }
 

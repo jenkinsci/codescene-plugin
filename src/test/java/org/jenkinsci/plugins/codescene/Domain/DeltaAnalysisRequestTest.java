@@ -26,7 +26,7 @@ public class DeltaAnalysisRequestTest {
                 Commits.from(new Commit("b75943ac51bf48ff5a206f0854ace2b67734ea66")),
                 userConfigFrom(GIT_REPO, COUPLING_THRESHOLD, enableUserBiomarkers = true));
 
-        assertEqualPayload("{\"commits\":[\"b75943ac51bf48ff5a206f0854ace2b67734ea66\"],", useBiomarkers = "true", request);
+        assertEqualPayload("{\"commits\":[\"b75943ac51bf48ff5a206f0854ace2b67734ea66\"],", "true", request);
     }
 
     @Test
