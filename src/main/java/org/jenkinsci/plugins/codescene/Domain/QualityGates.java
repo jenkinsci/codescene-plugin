@@ -3,9 +3,9 @@ package org.jenkinsci.plugins.codescene.Domain;
 import javax.json.JsonObject;
 
 public class QualityGates {
-    private boolean goalHasFailed = false;
-    private boolean codeHealthDeclined = false;
-    private boolean gatesEnabled = false;
+    private boolean goalHasFailed;
+    private boolean codeHealthDeclined;
+    private boolean gatesEnabled;
 
     public QualityGates(final JsonObject gatesField, final Configuration userConfig) {
         if (null == gatesField) {
@@ -20,7 +20,6 @@ public class QualityGates {
     private QualityGates(boolean enableFailedGoalGate, boolean enableCodeHealthGate) {
         this.goalHasFailed = enableFailedGoalGate;
         this.codeHealthDeclined = enableCodeHealthGate;
-        this.gatesEnabled = false;
     }
 
     public static QualityGates none() {
