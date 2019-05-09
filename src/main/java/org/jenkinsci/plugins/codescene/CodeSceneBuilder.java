@@ -241,7 +241,8 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
                         detailsUrl,
                         riskThreshold,
                         result.getRiskDescription(),
-                        result.qualityGatesState()));
+                        result.qualityGatesState(),
+                        result.improvements()));
             }
         } else {
             listener.getLogger().format("No commits to run delta analysis on.%n");
@@ -272,7 +273,8 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
                 detailsUrl,
                 riskThreshold,
                 result.getRiskDescription(),
-                result.qualityGatesState());
+                result.qualityGatesState(),
+                result.improvements());
     }
 
     /**

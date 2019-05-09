@@ -152,6 +152,14 @@
                 font-weight: bold;
             }
 
+            .codescene-delta-analysis-action h4.improvements {
+                color: #008000;
+            }
+
+            .codescene-delta-analysis-action li.improvements {
+                color: #008000;
+            }
+
         </style>
         <div class="codescene-delta-analysis-action">
             <h2>${it.title}</h2>
@@ -228,6 +236,17 @@
                                         </j:forEach>
                                     </ul>
                                 </j:forEach>
+                        </j:if>
+
+                        <j:if test="${entry.hasImprovements}">
+                                <h4 class="improvements">Improves Code Health</h4>
+                                <ul>
+                                <j:forEach var="improvement" items="${entry.improvements}">
+
+                                        <li class="improvements">${improvement}</li>
+
+                                </j:forEach>
+                                </ul>
                         </j:if>
                     </div>
 
