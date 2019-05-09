@@ -9,6 +9,7 @@ public class DeltaAnalysisResult {
     private final String viewUrl;
     private final Commits commits;
     private final RiskClassification risk;
+    private final Improvements improvements;
     private final Warnings warnings;
     private final RiskDescription description;
     private final QualityGates gates;
@@ -20,6 +21,7 @@ public class DeltaAnalysisResult {
 
         viewUrl = result.getString("view");
         risk = riskFrom(deltaResult);
+        improvements = Improvements.In(deltaResult);
         warnings = warningsFrom(deltaResult);
         description = descriptionOfRiskFrom(deltaResult, versionOf(result));
         this.commits = commits;
@@ -93,6 +95,8 @@ public class DeltaAnalysisResult {
     public RiskClassification getRisk() {
         return risk;
     }
+
+    public Improvements improvements() { return improvements;}
 
     public RiskDescription getRiskDescription() { return description; }
 

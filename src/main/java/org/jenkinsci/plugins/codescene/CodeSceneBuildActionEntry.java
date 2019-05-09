@@ -15,6 +15,7 @@ public class CodeSceneBuildActionEntry {
     private final int riskThreshold;
     private final RiskDescription description;
     private final QualityGates qualityGatesState;
+    private final Improvements improvements;
 
     public CodeSceneBuildActionEntry(
             String title,
@@ -25,11 +26,13 @@ public class CodeSceneBuildActionEntry {
             URL viewUrl,
             int riskThreshold,
             RiskDescription description,
-            QualityGates qualityGatesState) {
+            QualityGates qualityGatesState,
+            final Improvements improvements) {
         this.title = title;
         this.showCommits = showCommits;
         this.commits = commits;
         this.risk = risk;
+        this.improvements = improvements;
         this.warnings = warnings;
         this.viewUrl = viewUrl;
         this.riskThreshold = riskThreshold;
@@ -80,6 +83,12 @@ public class CodeSceneBuildActionEntry {
     public boolean getGoalHasFailed() {
         return qualityGatesState != null && qualityGatesState.goalHasFailed();
     }
+
+    public boolean getHasImprovements() {
+        return improvements != null && !improvements.value().isEmpty();
+    }
+
+    public List<String> getImprovements() { return improvements.value(); }
 
     public boolean getCodeHealthDeclined() {
         return qualityGatesState != null && qualityGatesState.codeHealthDeclined();
