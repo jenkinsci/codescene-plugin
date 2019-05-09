@@ -153,11 +153,11 @@
             }
 
             .codescene-delta-analysis-action h4.improvements {
-                color: #59b300;
+                color: #008000;
             }
 
             .codescene-delta-analysis-action li.improvements {
-                color: #59b300;
+                color: #008000;
             }
 
         </style>
