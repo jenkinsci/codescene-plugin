@@ -14,11 +14,11 @@ public class Improvements {
 
     private Improvements(JsonObject deltaResult) {
         if (deltaResult.containsKey("improvements")) {
-            parseTestFrom(deltaResult);
+            parseImprovementsFrom(deltaResult);
         }
     }
 
-    private void parseTestFrom(JsonObject deltaResult) {
+    private void parseImprovementsFrom(JsonObject deltaResult) {
         final JsonArray improvements = deltaResult.getJsonArray("improvements");
 
         for (int i = 0; i < improvements.size(); ++i) {
