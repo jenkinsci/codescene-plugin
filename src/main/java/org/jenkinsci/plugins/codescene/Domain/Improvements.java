@@ -8,7 +8,7 @@ import java.util.List;
 public class Improvements {
     private final List<String> is = new ArrayList<>();
 
-    public static Improvements In(JsonObject deltaResult) {
+    public static Improvements in(JsonObject deltaResult) {
         return new Improvements(deltaResult);
     }
 

@@ -21,7 +21,7 @@ public class DeltaAnalysisResult {
 
         viewUrl = result.getString("view");
         risk = riskFrom(deltaResult);
-        improvements = Improvements.In(deltaResult);
+        improvements = Improvements.in(deltaResult);
         warnings = warningsFrom(deltaResult);
         description = descriptionOfRiskFrom(deltaResult, versionOf(result));
         this.commits = commits;
