@@ -218,6 +218,10 @@
 
                         <p>${entry.description}</p>
 
+                        <j:if test="${entry.hasCodeOwners}">
+                            <p class="code-owner">CODE OWNERS: ${entry.codeOwners}</p>
+                        </j:if>
+
                         <j:if test="${entry.showCommits}">
                             <h4>Commits</h4>
                             <ul>
