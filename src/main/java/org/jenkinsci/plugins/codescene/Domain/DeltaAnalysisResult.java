@@ -30,7 +30,7 @@ public class DeltaAnalysisResult {
 
     private QualityGates triggeredQualityGatesFrom(JsonObject deltaResult, final Configuration userConfig) {
         if (deltaResult.containsKey("quality-gates")) {
-            return new QualityGates(deltaResult.getJsonObject("quality-gates"), userConfig);
+            return new QualityGates(deltaResult, userConfig);
         }
 
         return QualityGates.none();

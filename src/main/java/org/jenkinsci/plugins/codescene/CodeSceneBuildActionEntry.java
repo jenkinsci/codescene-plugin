@@ -97,4 +97,14 @@ public class CodeSceneBuildActionEntry {
     public boolean getQualityGatesEnabled() {
         return qualityGatesState != null && qualityGatesState.enabled();
     }
+
+    public String getCodeOwners() {
+        if (qualityGatesState != null) {
+            return qualityGatesState.codeOwners();
+        }
+
+        return "-";
+    }
+
+    public boolean getHasCodeOwners() { return qualityGatesState != null && qualityGatesState.hasCodeOwners();}
 }
