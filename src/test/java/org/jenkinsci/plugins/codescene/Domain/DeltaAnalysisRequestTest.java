@@ -84,15 +84,7 @@ public class DeltaAnalysisRequestTest {
     private static Configuration userConfigFrom(boolean useBiomarkers, boolean failOnFailedGoal, boolean failOnDecliningCodeHealth) {
         final boolean letBuildPassOnFailedAnalysis = false;
         try {
-            return new Configuration(
-                    new URL("https://empear.com/"),
-                    new CodeSceneUser("CodeScene user name", "hashed"),
-                    DeltaAnalysisRequestTest.GIT_REPO,
-                    DeltaAnalysisRequestTest.COUPLING_THRESHOLD,
-                    useBiomarkers,
-                    letBuildPassOnFailedAnalysis,
-                    failOnFailedGoal,
-                    failOnDecliningCodeHealth);
+            return new ConfigurationBuilder().codeSceneUrl(new URL("https://empear.com/")).user(new CodeSceneUser("CodeScene user name", "hashed")).gitRepositoryToAnalyze(DeltaAnalysisRequestTest.GIT_REPO).couplingThresholdPercent(DeltaAnalysisRequestTest.COUPLING_THRESHOLD).useBiomarkers(useBiomarkers).letBuildPassOnFailedAnalysis(letBuildPassOnFailedAnalysis).failOnFailedGoal(failOnFailedGoal).failOnDecliningCodeHealth(failOnDecliningCodeHealth).build();
         } catch (MalformedURLException e) {
             throw new RuntimeIoException(e);
         }
