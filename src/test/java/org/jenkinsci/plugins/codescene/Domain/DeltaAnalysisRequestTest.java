@@ -1,6 +1,5 @@
 package org.jenkinsci.plugins.codescene.Domain;
 
-import org.apache.mina.core.RuntimeIoException;
 import org.junit.Test;
 
 import java.net.MalformedURLException;
@@ -67,6 +66,43 @@ public class DeltaAnalysisRequestTest {
         assertEqualPayload("{\"commits\":[\"b75943ac51bf48ff5a206f0854ace2b67734ea66\"],", "true", request);
     }
 
+
+    @Test
+    public void gerritSpecificRequest() {
+        final DeltaAnalysisRequest request = new DeltaAnalysisRequest(
+                Commits.from(new Commit("b75943ac51bf48ff5a206f0854ace2b67734ea66")),
+                commonUserConfig()
+                        .originUrl("ssh://admin@localhost:29418/poptavka")
+                        .changeRef("refs/changes/10/10/1")
+                .build()
+        );
+
+        assertEquals("{\"commits\":[\"b75943ac51bf48ff5a206f0854ace2b67734ea66\"]," +
+                        "\"repository\":\"codescene-ui\"," +
+                        "\"coupling_threshold_percent\":65," +
+                        "\"use_biomarkers\":false," +
+                        "\"origin_url\":\"ssh://admin@localhost:29418/poptavka\",\"change_ref\":\"refs/changes/10/10/1\"}",
+                request.asJson().toString());
+    }
+
+     @Test
+    public void gerritSpecificRequestWithOnlyOriginUrlIsNotEnough() {
+        final DeltaAnalysisRequest request = new DeltaAnalysisRequest(
+                Commits.from(new Commit("b75943ac51bf48ff5a206f0854ace2b67734ea66")),
+                commonUserConfig()
+                        .originUrl("ssh://admin@localhost:29418/poptavka")
+                .build()
+        );
+
+        // origin_url won't be included unless the changeRef is specified too
+        assertEquals("{\"commits\":[\"b75943ac51bf48ff5a206f0854ace2b67734ea66\"]," +
+                        "\"repository\":\"codescene-ui\"," +
+                        "\"coupling_threshold_percent\":65," +
+                        "\"use_biomarkers\":false}",
+                request.asJson().toString());
+    }
+
+
     private static void assertEqualPayload(final String serializedCommits,
                                            final String enabledBiomarkers,
                                            final DeltaAnalysisRequest request) {
@@ -83,10 +119,21 @@ public class DeltaAnalysisRequestTest {
 
     private static Configuration userConfigFrom(boolean useBiomarkers, boolean failOnFailedGoal, boolean failOnDecliningCodeHealth) {
         final boolean letBuildPassOnFailedAnalysis = false;
+        return commonUserConfig()
+                .useBiomarkers(useBiomarkers)
+                .letBuildPassOnFailedAnalysis(letBuildPassOnFailedAnalysis)
+                .failOnFailedGoal(failOnFailedGoal)
+                .failOnDecliningCodeHealth(failOnDecliningCodeHealth)
+                .build();
+    }
+
+    private static ConfigurationBuilder commonUserConfig() {
         try {
-            return new ConfigurationBuilder().codeSceneUrl(new URL("https://empear.com/")).user(new CodeSceneUser("CodeScene user name", "hashed")).gitRepositoryToAnalyze(DeltaAnalysisRequestTest.GIT_REPO).couplingThresholdPercent(DeltaAnalysisRequestTest.COUPLING_THRESHOLD).useBiomarkers(useBiomarkers).letBuildPassOnFailedAnalysis(letBuildPassOnFailedAnalysis).failOnFailedGoal(failOnFailedGoal).failOnDecliningCodeHealth(failOnDecliningCodeHealth).build();
+            return new ConfigurationBuilder().codeSceneUrl(new URL("https://empear.com/")).user(new CodeSceneUser("CodeScene user name", "hashed"))
+                    .gitRepositoryToAnalyze(DeltaAnalysisRequestTest.GIT_REPO)
+                    .couplingThresholdPercent(DeltaAnalysisRequestTest.COUPLING_THRESHOLD);
         } catch (MalformedURLException e) {
-            throw new RuntimeIoException(e);
+            throw new RuntimeException(e);
         }
     }
 }

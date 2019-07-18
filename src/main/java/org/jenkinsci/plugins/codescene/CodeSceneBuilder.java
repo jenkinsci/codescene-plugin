@@ -77,6 +77,13 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
     private boolean failOnFailedGoal = true;
     private boolean failOnDecliningCodeHealth = true;
 
+    /* Gerrit support - alternative origin_url (e.g. "ssh://admin@localhost:29418/poptavka")
+       for CodeScene to fetch changes before running an analysis;
+       this is needed because Gerrit's "Changes" are special and are not fetched during a regular `git fetch`.
+       note: change_ref is only set via GERRIT_REFSPEC env var/parameter
+       */
+    private String originUrl;
+
     // deprecated authentication params - use credentialsId instead
     @Deprecated private transient String username;
     @Deprecated private transient String password;
@@ -303,10 +310,26 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
         try {
             URL url = new URL(deltaAnalysisUrl);
 
-            Configuration codesceneConfig = new Configuration(url, userConfig(), new Repository(repository),
-                    couplingThresholdPercent, useBiomarkers, letBuildPassOnFailedAnalysis, failOnFailedGoal,
-                    failOnDecliningCodeHealth);
             EnvVars env = build.getEnvironment(listener);
+
+            Configuration codesceneConfig = new ConfigurationBuilder()
+                    .codeSceneUrl(url)
+                    .user(userConfig())
+                    .gitRepositoryToAnalyze(new Repository(repository))
+                    .couplingThresholdPercent(couplingThresholdPercent)
+                    .useBiomarkers(useBiomarkers)
+                    .letBuildPassOnFailedAnalysis(letBuildPassOnFailedAnalysis)
+                    .failOnFailedGoal(failOnFailedGoal)
+                    .failOnDecliningCodeHealth(failOnDecliningCodeHealth)
+                    // In most cases, we want to re-use the repository URL.
+                    // If that's different from the Gerrit repo url, then the user can provide a custom value via the originUrl field
+                    .originUrl(originUrl != null ? originUrl : env.get("GIT_URL"))
+                    // This should be set by the Gerrit Trigger plugin
+                    // Alternatively, user can set this parameter explicitly/
+                    // However, it doesn't make sense to provide a job config field for this since it's different for every job
+                    .changeRef(env.get("GERRIT_REFSPEC"))
+                    .build();
+
 
 
             final Commit currentCommit = new Commit(env.get("GIT_COMMIT"));
