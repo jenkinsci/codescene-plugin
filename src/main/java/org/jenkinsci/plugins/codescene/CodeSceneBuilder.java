@@ -29,6 +29,7 @@ import hudson.util.ListBoxModel;
 import jenkins.model.Jenkins;
 import jenkins.tasks.SimpleBuildStep;
 import net.sf.json.JSONObject;
+import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.Symbol;
 import org.jenkinsci.plugins.codescene.Domain.*;
 import org.kohsuke.stapler.AncestorInPath;
@@ -149,6 +150,10 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
         return failOnDecliningCodeHealth;
     }
 
+    public String getOriginUrl() {
+        return originUrl;
+    }
+
     @DataBoundSetter
     public void setAnalyzeLatestIndividually(boolean analyzeLatestIndividually) {
         this.analyzeLatestIndividually = analyzeLatestIndividually;
@@ -195,6 +200,10 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
     @DataBoundSetter
     public void setFailOnDecliningCodeHealth(boolean failOnDecliningCodeHealth) { this.failOnDecliningCodeHealth = failOnDecliningCodeHealth; }
 
+    @DataBoundSetter
+    public void setOriginUrl(String originUrl) {
+        this.originUrl = originUrl;
+    }
 
     // handle default values for new fields with regards to existing jobs (backward compatibility)
     // check https://wiki.jenkins-ci.org/display/JENKINS/Hint+on+retaining+backward+compatibility
@@ -322,8 +331,8 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
                     .failOnFailedGoal(failOnFailedGoal)
                     .failOnDecliningCodeHealth(failOnDecliningCodeHealth)
                     // In most cases, we want to re-use the repository URL.
-                    // If that's different from the Gerrit repo url, then the user can provide a custom value via the originUrl field
-                    .originUrl(originUrl != null ? originUrl : env.get("GIT_URL"))
+                    // If that's different from the Gerrit repo url, then the user can provide a custom value via the originUrl config field
+                    .originUrl(StringUtils.isNotBlank(originUrl) ? originUrl : env.get("GIT_URL"))
                     // This should be set by the Gerrit Trigger plugin
                     // Alternatively, user can set this parameter explicitly/
                     // However, it doesn't make sense to provide a job config field for this since it's different for every job
