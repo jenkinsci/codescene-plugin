@@ -12,12 +12,16 @@ public class Configuration {
     private final boolean letBuildPassOnFailedAnalysis;
     private final boolean failOnFailedGoal;
     private final boolean failOnDecliningCodeHealth;
+    private final String originUrl;
+    private final String changeRef;
+
 
     public Configuration(final URL codeSceneUrl, final CodeSceneUser user, final Repository gitRepositoryToAnalyze,
                          int couplingThresholdPercent, boolean useBiomarkers,
                          boolean letBuildPassOnFailedAnalysis,
                          boolean failOnFailedGoal,
-                         boolean failOnDecliningCodeHealth) {
+                         boolean failOnDecliningCodeHealth,
+                         String originUrl, String changeRef) {
         this.url = codeSceneUrl;
         this.user = user;
         this.repo = gitRepositoryToAnalyze;
@@ -26,6 +30,8 @@ public class Configuration {
         this.letBuildPassOnFailedAnalysis = letBuildPassOnFailedAnalysis;
         this.failOnFailedGoal = failOnFailedGoal;
         this.failOnDecliningCodeHealth = failOnDecliningCodeHealth;
+        this.originUrl = originUrl;
+        this.changeRef = changeRef;
     }
 
     public URL codeSceneUrl() {
@@ -53,4 +59,8 @@ public class Configuration {
     public boolean failOnFailedGoal() { return failOnFailedGoal; }
 
     public boolean failOnDecliningCodeHealth() { return failOnDecliningCodeHealth; }
+
+    public String originUrl() { return originUrl; }
+
+    public String changeRef() { return changeRef; }
 }

@@ -55,4 +55,14 @@
         </f:entry>
     </f:section>
 
+    <f:section title="Gerrit Configuration">
+       <f:entry title="Gerrit's origin URL (for git fetch)"
+                description="Overrides Gerrit's origin_url for delta analysis. This will be used to fetch changes from Gerrit server.
+ Repository URL is used if you let this empty. E.g. ssh://user@localhost:29418/myrepo">
+           <f:textbox field="originUrl" value="${it.originUrl}"/>
+       </f:entry>
+    </f:section>
+
+
+
 </j:jelly>
