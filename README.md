@@ -103,6 +103,29 @@ The CodeScene API configuration section has to match the information specified i
 API Credentials should be added via [jenkins credentials plugin](https://wiki.jenkins-ci.org/display/JENKINS/Credentials+Plugin).
 Check [Injecting Secrets into Jenkins Build Jobs](https://support.cloudbees.com/hc/en-us/articles/203802500-Injecting-Secrets-into-Jenkins-Build-Jobs) for more details.
 
+
+#### Gerrit Configuration
+
+This is an advanced config useful if you use [Gerrit Code Review](https://www.gerritcodereview.com/) tool.
+
+In the simplest case, you don't need to set  anything in the "Gerrit's origin URL" field:
+
+- If you use the [Gerrit Trigger](https://wiki.jenkins.io/display/JENKINS/Gerrit+Trigger) plugin,
+it sets the `GERRIT_REFSPEC` job env variable used by the CodeScene plugin as the `change_ref` parameter's value
+sent to the CodeScene Delta Analysis API.
+- The API also requires the `origin_url` parameter which is by default set 
+to the value of the _Repository URL_ field (see Jenkins job Git plugin config). 
+
+In more complex scenarios you can:
+- add the `GERRIT_REFSPEC` "parameter" to your job config and set it manually when triggering a "Build with parameters". 
+- provide a custom value for the `origin_url` by setting the **_Gerrit's origin URL_** field in the job configuration (see the _Gerrit Configuration_ section).
+
+See also the [DELTA ANALYSIS WITH GERRIT](https://docs.enterprise.codescene.io/versions/3.2.5/guides/delta/automated-delta-analyses.html#delta-analysis-with-gerrit)
+section in CodeScene on-prem documentation.
+
+
+
+
 ## Changelog
 
 * 1.2.3
