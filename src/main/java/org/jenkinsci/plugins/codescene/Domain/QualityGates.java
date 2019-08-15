@@ -15,8 +15,9 @@ public class QualityGates {
             throw new IllegalArgumentException("The quality gates field cannot be null. This should be checked in the calling context");
         }
 
-        goalHasFailed = userConfig.failOnFailedGoal() && gatesField.getBoolean("degrades-in-code-health");
-        codeHealthDeclined = userConfig.failOnDecliningCodeHealth() && gatesField.getBoolean("violates-goal");
+        goalHasFailed = userConfig.failOnFailedGoal() && gatesField.getBoolean("violates-goal");
+        codeHealthDeclined = userConfig.failOnDecliningCodeHealth() && gatesField.getBoolean("degrades-in-code-health");
+
         gatesEnabled = userConfig.failOnFailedGoal() || userConfig.failOnDecliningCodeHealth();
         codeOwners = parseOptionalOwnersFrom(deltaResult);
     }
