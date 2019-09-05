@@ -213,7 +213,7 @@
                     <div class="body">
 
                         <j:if test="${entry.goalHasFailed}">
-                            <p class="fails-quality-gate">Failed Quality Gate: a goal -- as defined by CodeScene's Intelligent Notes -- is violated. Check the details below.</p>
+                            <p class="fails-quality-gate">Failed Quality Gate: a goal defined in CodeScene is violated. Check the details below.</p>
                         </j:if>
 
                         <j:if test="${entry.codeHealthDeclined}">
