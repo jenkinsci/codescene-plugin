@@ -26,7 +26,7 @@ public class CodeHealthDelta {
     private static String formatDeltaIn(final JsonArray delta) {
         final String formattedDelta = StringUtils.join(delta.getValuesAs(JsonString.class), ", ");
 
-        return StringUtils.isEmpty(formattedDelta)? formattedDelta : "-";
+        return StringUtils.isEmpty(formattedDelta)? "-" : formattedDelta;
     }
 
     public String getName() {
