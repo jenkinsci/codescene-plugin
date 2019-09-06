@@ -1,9 +1,10 @@
 package org.jenkinsci.plugins.codescene.Domain;
 
+import org.apache.commons.lang.StringUtils;
+
 import javax.json.JsonArray;
 import javax.json.JsonObject;
-import java.util.ArrayList;
-import java.util.List;
+import javax.json.JsonString;
 
 public class CodeHealthDelta {
 
@@ -23,16 +24,9 @@ public class CodeHealthDelta {
     }
 
     private static String formatDeltaIn(final JsonArray delta) {
-        StringBuilder formattedDelta = new StringBuilder();
-        String separator = "";
+        final String formattedDelta = StringUtils.join(delta.getValuesAs(JsonString.class), ", ");
 
-        for (int i = 0; i < delta.size(); ++i) {
-            formattedDelta.append(separator);
-            formattedDelta.append(delta.getString(i));
-            separator = ", ";
-        }
-
-        return formattedDelta.length() > 0 ? formattedDelta.toString() : "-";
+        return StringUtils.isEmpty(formattedDelta)? formattedDelta : "-";
     }
 
     public String getName() {
@@ -45,5 +39,14 @@ public class CodeHealthDelta {
 
     public String getDegradations() {
         return degradations;
+    }
+
+    @Override
+    public String toString() {
+        return "CodeHealthDelta{" +
+                "improvements='" + improvements + '\'' +
+                ", degradations='" + degradations + '\'' +
+                ", name='" + name + '\'' +
+                '}';
     }
 }
