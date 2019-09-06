@@ -13,6 +13,7 @@ public class DeltaAnalysisResult {
     private final Warnings warnings;
     private final RiskDescription description;
     private final QualityGates gates;
+    private final CodeHealthDeltaDescription codeHealthDeltaDescription;
 
     public DeltaAnalysisResult(final Commits commits, final Configuration userConfig, final JsonObject result) {
         ensureTheVersionIsSupported(result);
@@ -26,6 +27,7 @@ public class DeltaAnalysisResult {
         description = descriptionOfRiskFrom(deltaResult, versionOf(result));
         this.commits = commits;
         gates = triggeredQualityGatesFrom(deltaResult, userConfig);
+        codeHealthDeltaDescription = new CodeHealthDeltaDescription(deltaResult);
     }
 
     private QualityGates triggeredQualityGatesFrom(JsonObject deltaResult, final Configuration userConfig) {
@@ -105,4 +107,6 @@ public class DeltaAnalysisResult {
     }
 
     public QualityGates qualityGatesState() { return gates; }
+
+    public CodeHealthDeltaDescription describeCodeHealthDelta () { return codeHealthDeltaDescription; }
 }

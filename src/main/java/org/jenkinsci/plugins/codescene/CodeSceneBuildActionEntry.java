@@ -16,6 +16,7 @@ public class CodeSceneBuildActionEntry {
     private final RiskDescription description;
     private final QualityGates qualityGatesState;
     private final Improvements improvements;
+    private final CodeHealthDeltaDescription codeHealthDeltaDescription;
 
     public CodeSceneBuildActionEntry(
             String title,
@@ -27,7 +28,8 @@ public class CodeSceneBuildActionEntry {
             int riskThreshold,
             RiskDescription description,
             QualityGates qualityGatesState,
-            final Improvements improvements) {
+            final Improvements improvements,
+            CodeHealthDeltaDescription codeHealthDeltaDescription) {
         this.title = title;
         this.showCommits = showCommits;
         this.commits = commits;
@@ -38,6 +40,7 @@ public class CodeSceneBuildActionEntry {
         this.riskThreshold = riskThreshold;
         this.description = description;
         this.qualityGatesState = qualityGatesState;
+        this.codeHealthDeltaDescription = codeHealthDeltaDescription;
     }
 
     public String getTitle() {
@@ -107,4 +110,7 @@ public class CodeSceneBuildActionEntry {
     }
 
     public boolean getHasCodeOwners() { return qualityGatesState != null && qualityGatesState.hasCodeOwners();}
+
+    public boolean getHasCodeHealthDeltaDescriptions() { return !codeHealthDeltaDescription.deltaDescriptions().isEmpty(); }
+    public List<CodeHealthDelta> getCodeHealthDeltaDescriptions() { return codeHealthDeltaDescription.deltaDescriptions(); }
 }

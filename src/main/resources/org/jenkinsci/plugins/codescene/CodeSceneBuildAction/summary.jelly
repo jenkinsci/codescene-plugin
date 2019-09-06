@@ -160,6 +160,14 @@
                 color: #008000;
             }
 
+            .codescene-delta-analysis-action span.improvements {
+                color: #008000;
+            }
+
+            .codescene-delta-analysis-action span.degradations {
+                color: #fe6849;
+            }
+
         </style>
         <div class="codescene-delta-analysis-action">
             <h2>${it.title}</h2>
@@ -205,7 +213,7 @@
                     <div class="body">
 
                         <j:if test="${entry.goalHasFailed}">
-                            <p class="fails-quality-gate">Failed Quality Gate: a goal -- as defined by CodeScene's Intelligent Notes -- is violated. Check the details below.</p>
+                            <p class="fails-quality-gate">Failed Quality Gate: a goal defined in CodeScene is violated. Check the details below.</p>
                         </j:if>
 
                         <j:if test="${entry.codeHealthDeclined}">
@@ -251,6 +259,17 @@
 
                                 </j:forEach>
                                 </ul>
+                        </j:if>
+
+                        <j:if test="${entry.hasCodeHealthDeltaDescriptions}">
+                            <h4>Code Health Delta Descriptions</h4>
+                            <j:forEach var="delta" items="${entry.codeHealthDeltaDescriptions}">
+                             <p>${delta.name}</p>
+                              <ul>
+                                    <li><span class="improvements">Improvements:</span> ${delta.improvements}</li>
+                                    <li><span class="degradations">Degradations:</span> ${delta.degradations}</li>
+                              </ul>
+                            </j:forEach>
                         </j:if>
                     </div>
 

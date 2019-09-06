@@ -1,0 +1,43 @@
+{"risk": 7,
+ "description":
+ "The change is high risk and adds 2730 lines, deletes 38 lines of code in 9 files. The risk is lower since it's a very experienced author with many contributions.",
+ "id": "d013f21aca9a5c0bcd0cf6edb23dc09c66f66104",
+ "warnings":
+ [{"category": "Modifies Hotspot",
+   "details":
+   ["poptavka-app/poptavka-web/src/main/java/com/eprovement/poptavka/client/homedemands/HomeDemandsPresenter.java",
+     "poptavka-app/poptavka-web/src/main/java/com/eprovement/poptavka/server/service/admin/AdminRPCServiceImpl.java",
+     "poptavka-app/poptavka-web/src/main/java/com/eprovement/poptavka/client/root/RootEventBus.java",
+     "poptavka-app/poptavka-core/src/main/java/com/eprovement/poptavka/domain/message/UserMessage.java"]},
+  {"category": "Absence of Expected Change Pattern",
+   "details":
+   ["poptavka-app/poptavka-web/src/main/java/com/eprovement/poptavka/client/user/admin/AdminHandler.java",
+     "poptavka-app/poptavka-web/src/main/java/com/eprovement/poptavka/client/user/admin/AdminEventBus.java"]},
+  {"category": "Degrades in Code Health",
+   "details":
+   ["ClientDemandsModuleRPCServiceImpl.java degrades from a Code Health of 8.3 -> 7.7",
+     "AdminRPCServiceImpl.java degrades from a Code Health of 9.7 -> 1.0",
+     "HomeDemandsPresenter.java degrades from a Code Health of 10.0 -> 8.3"]},
+  {"category": "Violates Goals",
+   "details":
+   ["Hotspots marked refactor, AdminRPCServiceImpl.java, degrades from a Code Health of 9.67 -> 1.0",
+     "Hotspots marked supervise, HomeDemandsPresenter.java, degrades from a Code Health of 10.0 -> 8.33"]}],
+ "improvements": [],
+ "quality-gates": {"degrades-in-code-health": true, "violates-goal" : true},
+ "code-health-delta-descriptions":
+ [{"name": "ClientDemandsModuleRPCServiceImpl.java",
+   "improved": [],
+   "degraded": [",Deep, Nested Complexity - new issue"]},
+  {"name": "AdminRPCServiceImpl.java",
+   "improved": [],
+   "degraded":
+   ["Lines of Code in a Single File - new issue",
+     "Large Brain Method - new issue",
+     "Brain Method - new issue",
+     "Overall Code Complexity - new issue",
+     "Deep, Nested Complexity - new issue"]},
+  {"name": "HomeDemandsPresenter.java",
+   "improved": [],
+   "degraded":
+   ["Brain Method - new issue",
+     "Deep, Nested Complexity - new issue"]}]}
