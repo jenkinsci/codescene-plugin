@@ -171,3 +171,4 @@ issues](https://github.com/empear-analytics/codescene-jenkins-plugin/issues).
 
 Licensed under the [MIT License](LICENSE).
 tiny change 2020-02-06T10:28:33
+tiny change 2020-02-06T10:28:38
