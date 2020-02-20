@@ -1,5 +1,5 @@
 **Small change to trigger delta analysis**
- 1
+
 
 # codescene-jenkins-plugin
 
