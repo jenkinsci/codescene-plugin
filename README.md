@@ -5,6 +5,7 @@
 - 5
 - 6 
 - 7 
+- 8 
 
 # codescene-jenkins-plugin
 
