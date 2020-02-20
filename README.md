@@ -14,6 +14,14 @@ the system. The earlier you can react to any potential finding, the better. That
 CodeScene offers integration points that let you incorporate the analysis
 results into your build pipeline.
 
+
+## CodeScene Badges
+
+[![CodeScene Code Health]([![CodeScene Code Health](https://codescene.io/projects/1164/status-badges/code-health)](https://codescene.io/projects/1164))
+
+[![CodeScene System Mastery](https://codescene.io/projects/1164/status-badges/system-mastery)](https://codescene.io/projects/1164)
+
+
 ## Capabilities, Use Cases, and Examples
 
 This plugin lets you use CodeScene’s Delta Analysis to:
