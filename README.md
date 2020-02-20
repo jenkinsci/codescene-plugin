@@ -17,7 +17,7 @@ results into your build pipeline.
 
 ## CodeScene Badges
 
-[![CodeScene Code Health]([![CodeScene Code Health](https://codescene.io/projects/1164/status-badges/code-health)](https://codescene.io/projects/1164))
+[![CodeScene Code Health](https://codescene.io/projects/1164/status-badges/code-health)](https://codescene.io/projects/1164)
 
 [![CodeScene System Mastery](https://codescene.io/projects/1164/status-badges/system-mastery)](https://codescene.io/projects/1164)
 
