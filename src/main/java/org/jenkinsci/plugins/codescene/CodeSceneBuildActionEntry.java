@@ -17,6 +17,7 @@ public class CodeSceneBuildActionEntry {
     private final QualityGates qualityGatesState;
     private final Improvements improvements;
     private final CodeHealthDeltaDescription codeHealthDeltaDescription;
+    private final NewFiles newFiles;
 
     public CodeSceneBuildActionEntry(
             String title,
@@ -29,7 +30,8 @@ public class CodeSceneBuildActionEntry {
             RiskDescription description,
             QualityGates qualityGatesState,
             final Improvements improvements,
-            CodeHealthDeltaDescription codeHealthDeltaDescription) {
+            CodeHealthDeltaDescription codeHealthDeltaDescription,
+            NewFiles newFiles) {
         this.title = title;
         this.showCommits = showCommits;
         this.commits = commits;
@@ -41,6 +43,7 @@ public class CodeSceneBuildActionEntry {
         this.description = description;
         this.qualityGatesState = qualityGatesState;
         this.codeHealthDeltaDescription = codeHealthDeltaDescription;
+        this.newFiles = newFiles;
     }
 
     public String getTitle() {
@@ -113,4 +116,8 @@ public class CodeSceneBuildActionEntry {
 
     public boolean getHasCodeHealthDeltaDescriptions() { return !codeHealthDeltaDescription.deltaDescriptions().isEmpty(); }
     public List<CodeHealthDelta> getCodeHealthDeltaDescriptions() { return codeHealthDeltaDescription.deltaDescriptions(); }
+
+    public boolean getHasNewFilesInfo() { return newFiles.hasNewFileInfo(); }
+    public String getNewFilesSummary() { return newFiles.getSummary(); }
+    public List<ReviewOfNewFile> getReviewOfNewFiles() { return newFiles.getReviews(); }
 }

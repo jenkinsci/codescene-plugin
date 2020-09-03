@@ -136,6 +136,8 @@ section in CodeScene on-prem documentation.
 
 ## Changelog
 
+* 1.5.1
+ * Introduce a code review of new files added in a commit. This review also serves as a quality gate to detect new content with low code health.
 * 1.2.3
  * Introduce optional quality gates based on CodeScene's [Intelligent Notes](https://empear.com/blog/manage-technical-debt-with-augmented-code-analysis/).
 * 1.1.4

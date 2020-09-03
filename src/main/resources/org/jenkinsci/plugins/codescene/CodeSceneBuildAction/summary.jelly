@@ -271,6 +271,19 @@
                               </ul>
                             </j:forEach>
                         </j:if>
+
+                        <j:if test="${entry.hasNewFilesInfo}">
+                            <h4>Review of New Files</h4>
+                            <p>${entry.newFilesSummary}</p>
+                            <j:forEach var="review" items="${entry.reviewOfNewFiles}">
+                             <p>${review.name}</p>
+                              <ul>
+                                  <j:forEach var="rr" items="${review.reviewResults}">
+                                    <li><span class="degradations">${rr}</span></li>
+                                  </j:forEach>
+                              </ul>
+                            </j:forEach>
+                        </j:if>
                     </div>
 
                 </div>

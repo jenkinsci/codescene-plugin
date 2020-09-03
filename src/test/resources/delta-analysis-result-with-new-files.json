@@ -1,0 +1,53 @@
+{
+  "risk": 0,
+  "description": "Not enough commits to calculate risk. The risk classification will be enabled automatically once you have more development activity.",
+  "id": "aaf646a52b29f520de9b7799639408ea2eb7afb0",
+  "warnings": [
+    {
+      "category": "Low Code Health for new\/renamed Modules",
+      "details": [
+        "more_new_files2.c has a low code health score with 6.85."
+      ]
+    }
+  ],
+  "improvements": [],
+  "new-files-info": {
+    "summary": "1 new files where the code health is above the lower threshold for new code, 8.1",
+    "warnings": [
+      {
+        "name": "rename-test\/one_more_new_src\/more_new_files2.c",
+        "review": [
+          {
+            "title": "Long Method Detected",
+            "description": "The longest function (initialize_rb_class_with_no_args) has 174 lines of code. The recommended maximum length is 70 lines.",
+            "indication": 3
+          },
+          {
+            "title": "Bumpy Road Ahead",
+            "description": "The code is complex to read due to its nesting with multiple logical blocks. The most complex function is putmsg with 3 logical blocks. A bumpy road like putmsg indicates a lack of encapsulation. Consider to extract smaller, cohesive functions from the bumpy functions.",
+            "indication": 3
+          },
+          {
+            "title": "File Size Issue",
+            "description": "This module seems to grow quite large with 1444 lines of code (comments stripped away). Watch it carefully and consider to modularize it.",
+            "indication": 2
+          },
+          {
+            "title": "Excess function arguments",
+            "description": "The function put_ruby_value has 7 arguments, which is above the threshold of 5 arguments. This indicates either low cohesion or a missing abstraction that encapsulates those arguments.",
+            "indication": 2
+          },
+          {
+            "title": "Brain Method Detected",
+            "description": "The function putmsg has a McCabe complexity of 39 logical paths. The recommended complexity threshold is 9.",
+            "indication": 2
+          }
+        ]
+      }
+    ]
+  },
+  "quality-gates": {
+    "degrades-in-code-health": true,
+    "violates-goal": false
+  }
+}
