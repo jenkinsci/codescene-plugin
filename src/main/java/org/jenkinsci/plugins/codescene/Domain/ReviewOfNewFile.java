@@ -14,7 +14,7 @@ import java.util.List;
 public class ReviewOfNewFile {
 
     private String name;
-    private String reviewResults;
+    private List<String> reviewResults;
 
     public ReviewOfNewFile(final JsonObject newFileWarning) {
         if (null == newFileWarning) {
@@ -25,7 +25,7 @@ public class ReviewOfNewFile {
         reviewResults = parseReviewResultsFrom(newFileWarning);
     }
 
-    private static String parseReviewResultsFrom(final JsonObject w) {
+    private static List<String> parseReviewResultsFrom(final JsonObject w) {
         final List<String> reviewResults = new ArrayList<>();
         final JsonArray reviews = w.getJsonArray("review");
 
@@ -36,9 +36,9 @@ public class ReviewOfNewFile {
             }
         }
 
-        return StringUtils.join(reviewResults, ", ");
+        return reviewResults;
     }
 
     public String getName() { return name; }
-    public String getReviewResults() { return reviewResults; }
+    public List<String> getReviewResults() { return reviewResults; }
 }

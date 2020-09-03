@@ -27,7 +27,8 @@ public class NewFilesTest {
 
         assertEquals(1, reviews.size());
         assertEquals("rename-test/one_more_new_src/more_new_files2.c", reviews.get(0).getName());
-        assertEquals("Long Method Detected: The longest function (initialize_rb_class_with_no_args) has 174 lines of code. The recommended maximum length is 70 lines., Bumpy Road Ahead: The code is complex to read due to its nesting with multiple logical blocks. The most complex function is putmsg with 3 logical blocks. A bumpy road like putmsg indicates a lack of encapsulation. Consider to extract smaller, cohesive functions from the bumpy functions., File Size Issue: This module seems to grow quite large with 1444 lines of code (comments stripped away). Watch it carefully and consider to modularize it., Excess function arguments: The function put_ruby_value has 7 arguments, which is above the threshold of 5 arguments. This indicates either low cohesion or a missing abstraction that encapsulates those arguments., Brain Method Detected: The function putmsg has a McCabe complexity of 39 logical paths. The recommended complexity threshold is 9.",
-                reviews.get(0).getReviewResults());
+
+        final List<String> reviewResults = reviews.get(0).getReviewResults();
+        assertEquals(5, reviewResults.size());
     }
 }
