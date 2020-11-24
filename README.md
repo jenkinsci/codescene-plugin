@@ -1,12 +1,9 @@
 # codescene-jenkins-plugin
 
-[![Build Status](https://travis-ci.org/empear-analytics/codescene-jenkins-plugin.svg)](https://travis-ci.org/empear-analytics/codescene-jenkins-plugin)
-[![Latest release](https://img.shields.io/github/release/empear-analytics/codescene-jenkins-plugin.svg)](https://github.com/empear-analytics/codescene-jenkins-plugin/releases/latest)
+[![Latest release](https://img.shields.io/github/release/jenkinsci/codescene-plugin.svg)](https://github.com/jenkinsci/codescene-plugin/releases/latest)
 
 A jenkins plugin for
 [CodeScene](https://empear.com/how-it-works/) by Empear.
-
-Developers, check [internal jenkins plugin documentation](https://github.com/empear-analytics/codescene-docs/blob/master/codescene-jenkins-plugin.md) (private repo).
 
 
 CodeScene identifies and prioritizes technical debt, while at the same time uncovering and measuring social factors of the organization behind
