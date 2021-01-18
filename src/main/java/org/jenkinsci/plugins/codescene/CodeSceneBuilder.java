@@ -10,6 +10,7 @@ import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
 import com.cloudbees.plugins.credentials.common.UsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.DomainRequirement;
+import com.google.common.util.concurrent.ListenableFuture;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
@@ -32,6 +33,10 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.Symbol;
 import org.jenkinsci.plugins.codescene.Domain.*;
+import org.jenkinsci.plugins.workflow.flow.FlowExecution;
+import org.jenkinsci.plugins.workflow.job.WorkflowRun;
+import org.jenkinsci.plugins.workflow.steps.StepContext;
+import org.jenkinsci.plugins.workflow.steps.StepExecution;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
@@ -45,6 +50,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -314,6 +320,25 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
         }
     }
 
+    private EnvVars getEnvVar(Run<?, ?> build, TaskListener listener) throws IOException, InterruptedException, ExecutionException {
+        EnvVars env = build.getEnvironment(listener);
+        if(build instanceof WorkflowRun){
+            FlowExecution execution = ((WorkflowRun)build).getExecution();
+            if(execution != null) {
+                ListenableFuture<List<StepExecution>> executions = execution.getCurrentExecutions(true);
+                List<StepExecution> stepExecutions = executions.get();
+                if(!stepExecutions.isEmpty()) {
+                    StepContext context = stepExecutions.get(0).getContext();
+                    EnvVars envVars = context.get(EnvVars.class);
+                    if(envVars != null){
+                        env.putAll(envVars);
+                    }
+                }
+            }
+        }
+        return env;
+    }
+
     @Override
     public void perform(Run<?, ?> build, FilePath workspace, Launcher launcher, TaskListener listener) {
         if (isDeltaAnalysisConfigured()) {
@@ -323,7 +348,7 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
         try {
             URL url = new URL(deltaAnalysisUrl);
 
-            EnvVars env = build.getEnvironment(listener);
+            EnvVars env = this.getEnvVar(build, listener);
 
             Configuration codesceneConfig = new ConfigurationBuilder()
                     .codeSceneUrl(url)
@@ -362,7 +387,7 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
             // Note: this log is visible only in the jenkins logs, not in the job's console log.
             logger.log(Level.WARNING, "Remote failure as CodeScene couldn't perform the delta analysis: %s", e);
             build.setResult(buildResultForFailedAnalysisDependsOn(letBuildPassOnFailedAnalysis));
-        } catch (InterruptedException | IOException e) {
+        } catch (InterruptedException | IOException | ExecutionException e) {
             listener.error("Failed to run delta analysis: %s", e);
             build.setResult(Result.FAILURE);
         }
