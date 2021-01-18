@@ -320,23 +320,19 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
         }
     }
 
-    private EnvVars getEnvVar(Run<?, ?> build, TaskListener listener) throws IOException, InterruptedException, ExecutionException {
-        EnvVars env = build.getEnvironment(listener);
-        if(build instanceof WorkflowRun){
-            FlowExecution execution = ((WorkflowRun)build).getExecution();
-            if(execution != null) {
-                ListenableFuture<List<StepExecution>> executions = execution.getCurrentExecutions(true);
-                List<StepExecution> stepExecutions = executions.get();
-                if(!stepExecutions.isEmpty()) {
-                    StepContext context = stepExecutions.get(0).getContext();
-                    EnvVars envVars = context.get(EnvVars.class);
-                    if(envVars != null){
-                        env.putAll(envVars);
-                    }
+    private EnvVars getEnvVar(FlowExecution execution) throws ExecutionException, InterruptedException, IOException {
+        EnvVars envVars = new EnvVars();
+        if(execution != null) {
+            ListenableFuture<List<StepExecution>> executions = execution.getCurrentExecutions(true);
+            List<StepExecution> stepExecutions = executions.get();
+            for(StepExecution stepExecution : stepExecutions) {
+                EnvVars stepEnvVars = stepExecution.getContext().get(EnvVars.class);
+                if (stepEnvVars != null) {
+                    envVars.putAll(stepEnvVars);
                 }
             }
         }
-        return env;
+        return envVars;
     }
 
     @Override
@@ -348,7 +344,10 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
         try {
             URL url = new URL(deltaAnalysisUrl);
 
-            EnvVars env = this.getEnvVar(build, listener);
+            EnvVars env = build.getEnvironment(listener);
+            if(build instanceof WorkflowRun){
+                env.putAll(this.getEnvVar(((WorkflowRun)build).getExecution()));
+            }
 
             Configuration codesceneConfig = new ConfigurationBuilder()
                     .codeSceneUrl(url)
@@ -367,8 +366,6 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
                     // However, it doesn't make sense to provide a job config field for this since it's different for every job
                     .changeRef(env.get("GERRIT_REFSPEC"))
                     .build();
-
-
 
             final Commit currentCommit = new Commit(env.get("GIT_COMMIT"));
 
