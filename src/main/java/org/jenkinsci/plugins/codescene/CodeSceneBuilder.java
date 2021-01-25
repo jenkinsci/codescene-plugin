@@ -35,7 +35,6 @@ import org.jenkinsci.Symbol;
 import org.jenkinsci.plugins.codescene.Domain.*;
 import org.jenkinsci.plugins.workflow.flow.FlowExecution;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
-import org.jenkinsci.plugins.workflow.steps.StepContext;
 import org.jenkinsci.plugins.workflow.steps.StepExecution;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -320,7 +319,7 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
         }
     }
 
-    private EnvVars getEnvVar(FlowExecution execution) throws ExecutionException, InterruptedException, IOException {
+    private EnvVars getWorkFlowEnvVars(FlowExecution execution) throws ExecutionException, InterruptedException, IOException {
         EnvVars envVars = new EnvVars();
         if(execution != null) {
             ListenableFuture<List<StepExecution>> executions = execution.getCurrentExecutions(true);
@@ -346,7 +345,7 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
 
             EnvVars env = build.getEnvironment(listener);
             if(build instanceof WorkflowRun){
-                env.putAll(this.getEnvVar(((WorkflowRun)build).getExecution()));
+                env.putAll(this.getWorkFlowEnvVars(((WorkflowRun)build).getExecution()));
             }
 
             Configuration codesceneConfig = new ConfigurationBuilder()
