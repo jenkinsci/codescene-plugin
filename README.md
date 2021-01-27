@@ -83,6 +83,40 @@ Enter the required information in the CodeScene Jenkins configuration:
 
 ![Buildstep](buildstep.png)
 
+### Configure Multibranch Pipeline for CodeScene
+
+Create a new Jenkins Item Project using Multibranch Pipeline
+
+![New Project](multibranch-general.png)
+
+Add new Branch Source
+
+![Branch Source](multibranch-sources.png)
+
+Define Build Configuration File
+
+![Build Configuration](multibranch-build-configuration.png)
+
+Example of my_jenkins_file
+
+```groovy
+pipeline {
+   agent none
+   stages {
+       stage('codescene') {
+            agent { label 'master' }
+            steps {
+                  codescene analyzeBranchDiff: true, baseRevision: 'origin/master', credentialsId: '35640731-4c12-4c6b-9106-601aab148a64', deltaAnalysisUrl: 'http://your_code_scene_instance_url:3003/projects/{your_project_id}/delta-analysis', failOnDecliningCodeHealth: false, failOnFailedGoal: false, originUrl: '', repository: 'test', useBiomarkers: false
+            }
+        }
+    }
+}
+```
+
+Requirements:
+* A user with the role `BOT` must exist in your CodeScene instance.
+* Specify a `credentialsId` in `my_jenkins_file` that references valid Jenkins credentials (username/password).
+
 ####  Delta Analysis Settings
 
 CodeScene gives you a number of options that controls the scope of the delta analysis:
@@ -133,6 +167,8 @@ section in CodeScene on-prem documentation.
 
 ## Changelog
 
+* 1.5.2
+ * Fetch environment variable from last execution step for usage inside pipeline with Multibranch-Pipeline
 * 1.5.1
  * Introduce a code review of new files added in a commit. This review also serves as a quality gate to detect new content with low code health.
 * 1.2.3
