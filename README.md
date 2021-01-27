@@ -112,9 +112,10 @@ pipeline {
     }
 }
 ```
-a user with role BOT must exist on your CodeScene instance and
-the credentialsId from my_jenkins_file need to point to a valid username and password Jenkins credentials, 
 
+Requirements:
+* A user with the role `BOT` must exist in your CodeScene instance.
+* Specify a `credentialsId` in `my_jenkins_file` that references valid Jenkins credentials (username/password).
 
 ####  Delta Analysis Settings
 
