@@ -348,6 +348,7 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
                 env.putAll(this.getWorkFlowEnvVars(((WorkflowRun)build).getExecution()));
             }
 
+            final Commit currentCommit = new Commit(env.get("GIT_COMMIT"));
             Configuration codesceneConfig = new ConfigurationBuilder()
                     .codeSceneUrl(url)
                     .user(userConfig())
@@ -364,9 +365,8 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
                     // Alternatively, user can set this parameter explicitly/
                     // However, it doesn't make sense to provide a job config field for this since it's different for every job
                     .changeRef(env.get("GERRIT_REFSPEC"))
+                    .currentCommit(currentCommit)
                     .build();
-
-            final Commit currentCommit = new Commit(env.get("GIT_COMMIT"));
 
             if (isAnalyzeLatestIndividually()) {
                 analyzeLatestIndividualCommitFor(build, workspace, launcher, listener, codesceneConfig,

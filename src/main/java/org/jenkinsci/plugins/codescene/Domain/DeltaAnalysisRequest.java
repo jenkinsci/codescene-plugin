@@ -40,6 +40,10 @@ public class DeltaAnalysisRequest {
             b.add("change_ref", userConfig.changeRef());
         }
 
+        if (userConfig.currentCommit() != null) {
+            b.add("delta_branch_head", userConfig.currentCommit().toString());
+        }
+
         value = b.build();
     }
 
