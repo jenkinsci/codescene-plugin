@@ -167,6 +167,9 @@ section in CodeScene on-prem documentation.
 
 ## Changelog
 
+* 1.5.3
+ * Use the updated delta-analysis api, with graceful handling of edge cases on
+   reverted/deleted files in pull requests
 * 1.5.2
  * Fetch environment variable from last execution step for usage inside pipeline with Multibranch-Pipeline
 * 1.5.1
