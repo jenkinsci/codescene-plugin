@@ -85,7 +85,8 @@ public class QualityGatesTest {
                 true, // failOnFailedGoal,
                 true, // failOnDecliningCodeHealth,
                 "localhost", // origin URL
-                "master"); // changeRef
+                "master", // changeRef
+                null);
     }
 
     private static Configuration gatesDisabled() {
@@ -99,6 +100,7 @@ public class QualityGatesTest {
                 false, // failOnFailedGoal,
                 false, // failOnDecliningCodeHealth,
                 "localhost", // origin URL
-                "master"); // changeRef
+                "master", // changeRef
+                null);
     }
 }

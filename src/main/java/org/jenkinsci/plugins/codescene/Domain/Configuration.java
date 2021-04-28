@@ -14,6 +14,7 @@ public class Configuration {
     private final boolean failOnDecliningCodeHealth;
     private final String originUrl;
     private final String changeRef;
+    private final Commit currentCommit; // aka head-ref, delta-merge-head
 
 
     public Configuration(final URL codeSceneUrl, final CodeSceneUser user, final Repository gitRepositoryToAnalyze,
@@ -21,7 +22,7 @@ public class Configuration {
                          boolean letBuildPassOnFailedAnalysis,
                          boolean failOnFailedGoal,
                          boolean failOnDecliningCodeHealth,
-                         String originUrl, String changeRef) {
+                         String originUrl, String changeRef, Commit currentCommit) {
         this.url = codeSceneUrl;
         this.user = user;
         this.repo = gitRepositoryToAnalyze;
@@ -32,6 +33,7 @@ public class Configuration {
         this.failOnDecliningCodeHealth = failOnDecliningCodeHealth;
         this.originUrl = originUrl;
         this.changeRef = changeRef;
+        this.currentCommit = currentCommit;
     }
 
     public URL codeSceneUrl() {
@@ -63,4 +65,8 @@ public class Configuration {
     public String originUrl() { return originUrl; }
 
     public String changeRef() { return changeRef; }
+
+    public Commit currentCommit() {
+        return currentCommit;
+    }
 }

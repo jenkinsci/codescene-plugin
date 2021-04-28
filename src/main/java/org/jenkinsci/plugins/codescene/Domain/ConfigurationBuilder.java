@@ -13,6 +13,7 @@ public class ConfigurationBuilder {
     private boolean failOnDecliningCodeHealth;
     private String originUrl;
     private String changeRef;
+    private Commit currentCommit;
 
     public ConfigurationBuilder codeSceneUrl(URL codeSceneUrl) {
         this.codeSceneUrl = codeSceneUrl;
@@ -63,9 +64,12 @@ public class ConfigurationBuilder {
         this.changeRef = changeRef;
         return this;
     }
-
+    public ConfigurationBuilder currentCommit(Commit currentCommit) {
+        this.currentCommit = currentCommit;
+        return this;
+    }
     public Configuration build() {
         return new Configuration(codeSceneUrl, user, gitRepositoryToAnalyze, couplingThresholdPercent, useBiomarkers,
-                letBuildPassOnFailedAnalysis, failOnFailedGoal, failOnDecliningCodeHealth, originUrl, changeRef);
+                letBuildPassOnFailedAnalysis, failOnFailedGoal, failOnDecliningCodeHealth, originUrl, changeRef, currentCommit);
     }
 }
