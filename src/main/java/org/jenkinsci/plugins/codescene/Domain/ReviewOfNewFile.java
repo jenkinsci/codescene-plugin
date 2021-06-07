@@ -53,6 +53,9 @@ public class ReviewOfNewFile {
                 case STRING: {
                     sb.append(description);
                 } break;
+                default: {
+                    //do nothing
+                }
             }
         }
         return sb.toString();
