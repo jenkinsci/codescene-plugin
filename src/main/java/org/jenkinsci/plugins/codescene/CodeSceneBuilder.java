@@ -334,17 +334,28 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
         return envVars;
     }
 
+    private boolean isPipelineRun(Run<?, ?> build){
+        // when runnin as stage in pipeline the build is an instance of WorkflowRun
+        return build instanceof WorkflowRun;
+    }
+
+    private void setBuildResult(Run<?, ?> build, Result result, String message){
+        build.setResult(result);
+        if(isPipelineRun(build)){
+            //when running as stage in pipeline we throw a runtime exception to signal the pipeline the failing of the stage
+            throw new RuntimeException(message);
+        }
+    }
+
     @Override
     public void perform(Run<?, ?> build, FilePath workspace, Launcher launcher, TaskListener listener) {
         if (isDeltaAnalysisConfigured()) {
             return;
         }
-
         try {
             URL url = new URL(deltaAnalysisUrl);
-
             EnvVars env = build.getEnvironment(listener);
-            if(build instanceof WorkflowRun){
+            if(isPipelineRun(build)){
                 env.putAll(this.getWorkFlowEnvVars(((WorkflowRun)build).getExecution()));
             }
 
@@ -376,16 +387,17 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
             if (isAnalyzeBranchDiff() && getBaseRevision() != null) {
                 analyzeWorkOnBranchFor(build, workspace, launcher, listener, codesceneConfig, currentCommit, branch);
             }
-
         } catch (RemoteAnalysisException e) {
-            listener.error("Remote failure as CodeScene couldn't perform the delta analysis: %s", e);
+            String message = String.format("Remote failure as CodeScene couldn't perform the delta analysis: %s", e);
+            listener.error(message);
             // This is necessary to log the complete stacktrace - listener only shows exception message
             // Note: this log is visible only in the jenkins logs, not in the job's console log.
-            logger.log(Level.WARNING, "Remote failure as CodeScene couldn't perform the delta analysis: %s", e);
-            build.setResult(buildResultForFailedAnalysisDependsOn(letBuildPassOnFailedAnalysis));
+            logger.log(Level.WARNING, message);
+            setBuildResult(build, buildResultForFailedAnalysisDependsOn(letBuildPassOnFailedAnalysis), message);
         } catch (InterruptedException | IOException | ExecutionException e) {
-            listener.error("Failed to run delta analysis: %s", e);
-            build.setResult(Result.FAILURE);
+            String message = String.format("Failed to run delta analysis: %s", e);
+            listener.error(message);
+            setBuildResult(build, Result.FAILURE, message);
         }
     }
 
