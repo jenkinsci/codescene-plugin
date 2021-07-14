@@ -236,7 +236,7 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
     }
 
     private ArrayList<CodeSceneBuildActionEntry> runDeltaAnalysesOnIndividualCommits(Configuration config, List<String> revisions, TaskListener listener)
-            throws RemoteAnalysisException, MalformedURLException {
+            throws RemoteAnalysisException, IOException {
         List<Commits> commitSets = revisionsAsIndividualCommitSets(revisions);
         ArrayList<CodeSceneBuildActionEntry> entries = new ArrayList<>(commitSets.size());
 
@@ -275,7 +275,7 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
     }
 
     private CodeSceneBuildActionEntry runDeltaAnalysisOnBranchDiff(Configuration config, List<String> revisions, String branchName, TaskListener listener)
-            throws RemoteAnalysisException, MalformedURLException {
+            throws RemoteAnalysisException, IOException {
         Commits commitSet = revisionsAsCommitSet(revisions);
         DeltaAnalysis deltaAnalysis = new DeltaAnalysis(config);
         listener.getLogger().format("Running delta analysis on branch %s in repository %s.%n", branchName, config.gitRepositoryToAnalyze().value());
@@ -339,9 +339,10 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
         return build instanceof WorkflowRun;
     }
 
-    private void setBuildResult(Run<?, ?> build, Result result, String message){
+    private void onErrorBuildResult(Run<?, ?> build, TaskListener listener, Result result, String message){
+        listener.error(message);
         build.setResult(result);
-        if(isPipelineRun(build)){
+        if(isPipelineRun(build) && Result.FAILURE.equals(result)){
             //when running as stage in pipeline we throw a runtime exception to signal the pipeline the failing of the stage
             throw new RuntimeException(message);
         }
@@ -389,15 +390,12 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
             }
         } catch (RemoteAnalysisException e) {
             String message = String.format("Remote failure as CodeScene couldn't perform the delta analysis: %s", e);
-            listener.error(message);
             // This is necessary to log the complete stacktrace - listener only shows exception message
             // Note: this log is visible only in the jenkins logs, not in the job's console log.
             logger.log(Level.WARNING, message);
-            setBuildResult(build, buildResultForFailedAnalysisDependsOn(letBuildPassOnFailedAnalysis), message);
+            onErrorBuildResult(build, listener, buildResultForFailedAnalysisDependsOn(letBuildPassOnFailedAnalysis), message);
         } catch (InterruptedException | IOException | ExecutionException e) {
-            String message = String.format("Failed to run delta analysis: %s", e);
-            listener.error(message);
-            setBuildResult(build, Result.FAILURE, message);
+            onErrorBuildResult(build, listener, Result.FAILURE, String.format("Failed to run delta analysis: %s", e));
         }
     }
 
