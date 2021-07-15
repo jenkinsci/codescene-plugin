@@ -24,16 +24,20 @@ public class DeltaAnalysis {
         this.config = config;
     }
 
-    public DeltaAnalysisResult runOn(final Commits commits) throws RemoteAnalysisException {
+    /**
+     * run the delta analysis for the given Commits
+     * @param commits the list of commits encapsulated in the {@link Commits} object
+     * @return a {@link DeltaAnalysisResult} object
+     * @throws RemoteAnalysisException - in case of delta analyses failure reported by codecene instance
+     * @throws IOException - in case of IO problems (ex: codescene instance not reachable)
+     */
+    public DeltaAnalysisResult runOn(final Commits commits) throws RemoteAnalysisException, IOException {
         final DeltaAnalysisRequest payload = new DeltaAnalysisRequest(commits, config);
 
         try {
             return synchronousRequestWith(payload, commits);
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException("The configured CodeScene URL isn't valid", e);
-        } catch (IOException e) {
-            throw new RemoteAnalysisException("Failed to send request to CodeScene at " + config.codeSceneUrl().toString()
-                    + "\n  cause: " + e.getMessage(), e);
         }
     }
 
