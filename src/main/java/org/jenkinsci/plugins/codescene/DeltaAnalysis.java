@@ -24,6 +24,13 @@ public class DeltaAnalysis {
         this.config = config;
     }
 
+    /**
+     * run the delta analysis for the given Commits
+     * @param commits the list of commits encapsulated in the {@link Commits} object
+     * @return a {@link DeltaAnalysisResult} object
+     * @throws RemoteAnalysisException - in case of delta analyses failure reported by codecene instance
+     * @throws IOException - in case of IO problems (ex: codescene instance not reachable)
+     */
     public DeltaAnalysisResult runOn(final Commits commits) throws RemoteAnalysisException, IOException {
         final DeltaAnalysisRequest payload = new DeltaAnalysisRequest(commits, config);
 
