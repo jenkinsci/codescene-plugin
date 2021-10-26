@@ -16,56 +16,19 @@ public class DeltaAnalysisRequestTest {
     public void serializesRequestAsJson() {
         final DeltaAnalysisRequest request = new DeltaAnalysisRequest(
                 Commits.from(new Commit("b75943ac51bf48ff5a206f0854ace2b67734ea66")),
-                userConfigFrom(true));
+                userConfigFrom(false, false));
 
-        assertEqualPayload("{\"commits\":[\"b75943ac51bf48ff5a206f0854ace2b67734ea66\"],", "true", request);
+        assertEqualPayload("{\"commits\":[\"b75943ac51bf48ff5a206f0854ace2b67734ea66\"],", request);
     }
 
     @Test
     public void serializesRequestWithMultipleCommitsAsJson() {
         final DeltaAnalysisRequest request = new DeltaAnalysisRequest(
                 Commits.from(new Commit("b75943ac5"), new Commit("9822ac")),
-                userConfigFrom(false));
+                userConfigFrom(false, false));
 
-        assertEqualPayload("{\"commits\":[\"b75943ac5\",\"9822ac\"],", "false", request);
+        assertEqualPayload("{\"commits\":[\"b75943ac5\",\"9822ac\"],", request);
     }
-
-    @Test
-    public void enablesBiomarkersWhenFailedGoalGateEnabled() {
-        final DeltaAnalysisRequest request = new DeltaAnalysisRequest(
-                Commits.from(new Commit("b75943ac51bf48ff5a206f0854ace2b67734ea66")),
-                userConfigFrom(false, true, false));
-
-        assertEqualPayload("{\"commits\":[\"b75943ac51bf48ff5a206f0854ace2b67734ea66\"],", "true", request);
-    }
-
-    @Test
-    public void enablesBiomarkersWhenDecliningCodeHealthGateEnabled() {
-        final DeltaAnalysisRequest request = new DeltaAnalysisRequest(
-                Commits.from(new Commit("b75943ac51bf48ff5a206f0854ace2b67734ea66")),
-                userConfigFrom(false, false, true));
-
-        assertEqualPayload("{\"commits\":[\"b75943ac51bf48ff5a206f0854ace2b67734ea66\"],", "true", request);
-    }
-
-    @Test
-    public void enablesBiomarkersWhenAllGatesEnabled() {
-        final DeltaAnalysisRequest request = new DeltaAnalysisRequest(
-                Commits.from(new Commit("b75943ac51bf48ff5a206f0854ace2b67734ea66")),
-                userConfigFrom(false, true, true));
-
-        assertEqualPayload("{\"commits\":[\"b75943ac51bf48ff5a206f0854ace2b67734ea66\"],", "true", request);
-    }
-
-    @Test
-    public void enablesBiomarkersWhenRequestedTogetherWithAllGatesEnabled() {
-        final DeltaAnalysisRequest request = new DeltaAnalysisRequest(
-                Commits.from(new Commit("b75943ac51bf48ff5a206f0854ace2b67734ea66")),
-                userConfigFrom(true, true, true));
-
-        assertEqualPayload("{\"commits\":[\"b75943ac51bf48ff5a206f0854ace2b67734ea66\"],", "true", request);
-    }
-
 
     @Test
     public void gerritSpecificRequest() {
@@ -80,7 +43,6 @@ public class DeltaAnalysisRequestTest {
         assertEquals("{\"commits\":[\"b75943ac51bf48ff5a206f0854ace2b67734ea66\"]," +
                         "\"repository\":\"codescene-ui\"," +
                         "\"coupling_threshold_percent\":65," +
-                        "\"use_biomarkers\":false," +
                         "\"origin_url\":\"ssh://admin@localhost:29418/poptavka\",\"change_ref\":\"refs/changes/10/10/1\"}",
                 request.asJson().toString());
     }
@@ -97,30 +59,22 @@ public class DeltaAnalysisRequestTest {
         // origin_url won't be included unless the changeRef is specified too
         assertEquals("{\"commits\":[\"b75943ac51bf48ff5a206f0854ace2b67734ea66\"]," +
                         "\"repository\":\"codescene-ui\"," +
-                        "\"coupling_threshold_percent\":65," +
-                        "\"use_biomarkers\":false}",
+                        "\"coupling_threshold_percent\":65}",
                 request.asJson().toString());
     }
 
 
     private static void assertEqualPayload(final String serializedCommits,
-                                           final String enabledBiomarkers,
                                            final DeltaAnalysisRequest request) {
         assertEquals(serializedCommits +
                         "\"repository\":\"codescene-ui\"," +
-                        "\"coupling_threshold_percent\":65," +
-                        "\"use_biomarkers\":" + enabledBiomarkers + "}",
+                        "\"coupling_threshold_percent\":65}",
                 request.asJson().toString());
     }
 
-    private static Configuration userConfigFrom(boolean useBiomarkers) {
-        return userConfigFrom(useBiomarkers, false, false);
-    }
-
-    private static Configuration userConfigFrom(boolean useBiomarkers, boolean failOnFailedGoal, boolean failOnDecliningCodeHealth) {
+    private static Configuration userConfigFrom(boolean failOnFailedGoal, boolean failOnDecliningCodeHealth) {
         final boolean letBuildPassOnFailedAnalysis = false;
         return commonUserConfig()
-                .useBiomarkers(useBiomarkers)
                 .letBuildPassOnFailedAnalysis(letBuildPassOnFailedAnalysis)
                 .failOnFailedGoal(failOnFailedGoal)
                 .failOnDecliningCodeHealth(failOnDecliningCodeHealth)
