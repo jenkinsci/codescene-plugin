@@ -165,7 +165,7 @@ section in CodeScene on-prem documentation.
 
 ## Changelog
 * 1.5.6
-  * remove use-biomarkers options, it is not always enabled
+  * remove use-biomarkers options, it is now always enabled
 * 1.5.3
   * Use the updated delta-analysis api, with graceful handling of edge cases on
   reverted/deleted files in pull requests
