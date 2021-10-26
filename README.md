@@ -106,7 +106,7 @@ pipeline {
        stage('codescene') {
             agent { label 'master' }
             steps {
-                  codescene analyzeBranchDiff: true, baseRevision: 'origin/master', credentialsId: '35640731-4c12-4c6b-9106-601aab148a64', deltaAnalysisUrl: 'http://your_code_scene_instance_url:3003/projects/{your_project_id}/delta-analysis', failOnDecliningCodeHealth: false, failOnFailedGoal: false, originUrl: '', repository: 'test', useBiomarkers: false
+                  codescene analyzeBranchDiff: true, baseRevision: 'origin/master', credentialsId: '35640731-4c12-4c6b-9106-601aab148a64', deltaAnalysisUrl: 'http://your_code_scene_instance_url:3003/projects/{your_project_id}/delta-analysis', failOnDecliningCodeHealth: false, failOnFailedGoal: false, originUrl: '', repository: 'test'
             }
         }
     }
@@ -128,8 +128,6 @@ You can also change the defaults for risk threshold and temporal coupling thresh
 
 * *Risk Threshold*: commits with risk equal or higher than this value will make a build unstable
 * *Temporal Coupling Threshold*: minimum temporal coupling for "Absence of Expected Change Pattern" warning
-
-By checking the _**Use Biomarkers**_ option, CodeScene warns about files that seem to degrade in quality through issues introduced in the current changeset.
 
 Finally, you enable the Quality Gates in the configuration too.
 
@@ -166,20 +164,21 @@ section in CodeScene on-prem documentation.
 
 
 ## Changelog
-
+* 1.5.6
+  * remove use-biomarkers options, it is not always enabled
 * 1.5.3
- * Use the updated delta-analysis api, with graceful handling of edge cases on
-   reverted/deleted files in pull requests
+  * Use the updated delta-analysis api, with graceful handling of edge cases on
+  reverted/deleted files in pull requests
 * 1.5.2
- * Fetch environment variable from last execution step for usage inside pipeline with Multibranch-Pipeline
+  * Fetch environment variable from last execution step for usage inside pipeline with Multibranch-Pipeline
 * 1.5.1
- * Introduce a code review of new files added in a commit. This review also serves as a quality gate to detect new content with low code health.
+  * Introduce a code review of new files added in a commit. This review also serves as a quality gate to detect new content with low code health.
 * 1.2.3
- * Introduce optional quality gates based on CodeScene's [Intelligent Notes](https://empear.com/blog/manage-technical-debt-with-augmented-code-analysis/).
+  * Introduce optional quality gates based on CodeScene's [Intelligent Notes](https://empear.com/blog/manage-technical-debt-with-augmented-code-analysis/).
 * 1.1.4
- * Reverse the previously added configuration option so that a user explicitly has to allow an analysis failure to pass the build.
+  * Reverse the previously added configuration option so that a user explicitly has to allow an analysis failure to pass the build.
 * 1.1.3
- * Introduce a configuration option to mark builds as UNSTABLE rather than FAILED if a remote CodeScene analysis couldn't be performed.
+  * Introduce a configuration option to mark builds as UNSTABLE rather than FAILED if a remote CodeScene analysis couldn't be performed.
 * 1.1.2
   * Add Biomarkers support to auto-detect files that seem to degrade in quality through issues introduced in a changeset - requires CodeScene version 2.4.0 or higher.
 * 1.1.1

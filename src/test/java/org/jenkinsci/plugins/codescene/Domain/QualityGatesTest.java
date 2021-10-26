@@ -80,7 +80,6 @@ public class QualityGatesTest {
                 new CodeSceneUser("my name", "123"),
                 new Repository("testing-repo"),
                 80, // coupling threshold
-                true, // use biomarkers
                 true, // letBuildPassOnFailedAnalysis,
                 true, // failOnFailedGoal,
                 true, // failOnDecliningCodeHealth,
@@ -95,7 +94,6 @@ public class QualityGatesTest {
                 new CodeSceneUser("my name", "123"),
                 new Repository("testing-repo"),
                 80, // coupling threshold
-                true, // use biomarkers
                 true, // letBuildPassOnFailedAnalysis,
                 false, // failOnFailedGoal,
                 false, // failOnDecliningCodeHealth,

@@ -7,7 +7,6 @@ public class ConfigurationBuilder {
     private CodeSceneUser user;
     private Repository gitRepositoryToAnalyze;
     private int couplingThresholdPercent;
-    private boolean useBiomarkers;
     private boolean letBuildPassOnFailedAnalysis;
     private boolean failOnFailedGoal;
     private boolean failOnDecliningCodeHealth;
@@ -32,11 +31,6 @@ public class ConfigurationBuilder {
 
     public ConfigurationBuilder couplingThresholdPercent(int couplingThresholdPercent) {
         this.couplingThresholdPercent = couplingThresholdPercent;
-        return this;
-    }
-
-    public ConfigurationBuilder useBiomarkers(boolean useBiomarkers) {
-        this.useBiomarkers = useBiomarkers;
         return this;
     }
 
@@ -69,7 +63,7 @@ public class ConfigurationBuilder {
         return this;
     }
     public Configuration build() {
-        return new Configuration(codeSceneUrl, user, gitRepositoryToAnalyze, couplingThresholdPercent, useBiomarkers,
+        return new Configuration(codeSceneUrl, user, gitRepositoryToAnalyze, couplingThresholdPercent,
                 letBuildPassOnFailedAnalysis, failOnFailedGoal, failOnDecliningCodeHealth, originUrl, changeRef, currentCommit);
     }
 }

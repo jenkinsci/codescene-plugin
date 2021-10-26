@@ -12,7 +12,6 @@ import javax.json.*;
  *  -d
  * '{"commits": ["e69c60944dec4f0b1213cfbbd65067c57ef84e60"],
  *   "repository": "poptavka",
- *   "use_biomarkers": true,
  *   "origin_url": "ssh://admin@localhost:29418/poptavka",
  *   "change_ref": "refs/changes/02/2/1"}'
  *   http://localhost:3003/projects/1/delta-analysis
@@ -31,7 +30,6 @@ public class DeltaAnalysisRequest {
         b.add("commits", cs);
         b.add("repository", userConfig.gitRepositoryToAnalyze().value());
         b.add("coupling_threshold_percent", userConfig.couplingThresholdPercent());
-        b.add("use_biomarkers", enableBiomarkersDependingOn(userConfig));
 
         // gerrit support - CodeScene will fetch from given url and refspec if they are not null
         // strictly speaking we could allow changeRef to be null, but the same "and" is required by delta api too
@@ -45,14 +43,6 @@ public class DeltaAnalysisRequest {
         }
 
         value = b.build();
-    }
-
-    private static boolean enableBiomarkersDependingOn(final Configuration userConfig) {
-        return userConfig.useBiomarkers() || anyQualityGateEnabled(userConfig);
-    }
-
-    private static boolean anyQualityGateEnabled(final Configuration userConfig) {
-        return userConfig.failOnFailedGoal() || userConfig.failOnDecliningCodeHealth();
     }
 
     private static JsonArray serialize(final Commits commits) {

@@ -23,10 +23,6 @@
             <f:number field="couplingThresholdPercent" default="80" min="0" max="100" />
         </f:entry>
 
-
-        <f:optionalBlock field="useBiomarkers" title="Use Biomarkers" inline="true" default="true" checked="${it.useBiomarkers}">
-        </f:optionalBlock>
-
         <f:optionalBlock field="letBuildPassOnFailedAnalysis" title="Build Success on Failed Analysis" inline="true" default="false" checked="${it.letBuildPassOnFailedAnalysis}">
         </f:optionalBlock>
 

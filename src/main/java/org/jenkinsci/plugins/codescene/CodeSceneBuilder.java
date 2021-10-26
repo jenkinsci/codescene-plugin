@@ -73,8 +73,6 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
     private boolean markBuildAsUnstable;
     private int riskThreshold = DEFAULT_RISK_THRESHOLD;
     private int couplingThresholdPercent = DEFAULT_COUPLING_THRESHOLD_PERCENT;
-    // CodeScene 2.4.0+ supports biomarkers as a separate risk category - default: true
-    private boolean useBiomarkers = true;
     // Some users prefer their builds to continue even if CodeScene -- for some reason -- fail to
     // execute the delta analysis. By default we fail the build, but this can be overriden:
     private boolean letBuildPassOnFailedAnalysis = false;
@@ -139,10 +137,6 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
         return couplingThresholdPercent;
     }
 
-    public boolean isUseBiomarkers() {
-        return useBiomarkers;
-    }
-
     public boolean isLetBuildPassOnFailedAnalysis() {
         return letBuildPassOnFailedAnalysis;
     }
@@ -189,11 +183,6 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
         this.couplingThresholdPercent = couplingThresholdPercent < 1 || couplingThresholdPercent > 100
                 ? DEFAULT_COUPLING_THRESHOLD_PERCENT
                 : couplingThresholdPercent;
-    }
-
-    @DataBoundSetter
-    public void setUseBiomarkers(boolean useBiomarkers) {
-        this.useBiomarkers = useBiomarkers;
     }
 
     @DataBoundSetter
@@ -366,7 +355,6 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
                     .user(userConfig())
                     .gitRepositoryToAnalyze(new Repository(repository))
                     .couplingThresholdPercent(couplingThresholdPercent)
-                    .useBiomarkers(useBiomarkers)
                     .letBuildPassOnFailedAnalysis(letBuildPassOnFailedAnalysis)
                     .failOnFailedGoal(failOnFailedGoal)
                     .failOnDecliningCodeHealth(failOnDecliningCodeHealth)
