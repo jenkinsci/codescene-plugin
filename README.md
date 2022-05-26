@@ -164,6 +164,8 @@ section in CodeScene on-prem documentation.
 
 
 ## Changelog
+* 1.5.7
+  * Set target ref when calling the CodeScene API
 * 1.5.6
   * remove use-biomarkers options, it is now always enabled
 * 1.5.3
