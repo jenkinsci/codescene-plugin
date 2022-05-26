@@ -365,6 +365,7 @@ public class CodeSceneBuilder extends Builder implements SimpleBuildStep {
                     // Alternatively, user can set this parameter explicitly/
                     // However, it doesn't make sense to provide a job config field for this since it's different for every job
                     .changeRef(env.get("GERRIT_REFSPEC"))
+                    .baseRevision(getBaseRevision())
                     .currentCommit(currentCommit)
                     .build();
 

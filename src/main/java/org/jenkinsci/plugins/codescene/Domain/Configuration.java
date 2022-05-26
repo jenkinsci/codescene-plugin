@@ -14,6 +14,7 @@ public class Configuration {
     private final String originUrl;
     private final String changeRef;
     private final Commit currentCommit; // aka head-ref, delta-merge-head
+    private final String baseRevision;
 
 
     public Configuration(final URL codeSceneUrl, final CodeSceneUser user, final Repository gitRepositoryToAnalyze,
@@ -21,7 +22,8 @@ public class Configuration {
                          boolean letBuildPassOnFailedAnalysis,
                          boolean failOnFailedGoal,
                          boolean failOnDecliningCodeHealth,
-                         String originUrl, String changeRef, Commit currentCommit) {
+                         String originUrl, String changeRef, 
+                         Commit currentCommit, String baseRevision) {
         this.url = codeSceneUrl;
         this.user = user;
         this.repo = gitRepositoryToAnalyze;
@@ -32,6 +34,7 @@ public class Configuration {
         this.originUrl = originUrl;
         this.changeRef = changeRef;
         this.currentCommit = currentCommit;
+        this.baseRevision = baseRevision;
     }
 
     public URL codeSceneUrl() {
@@ -62,5 +65,9 @@ public class Configuration {
 
     public Commit currentCommit() {
         return currentCommit;
+    }
+
+    public String baseRevision() { 
+        return baseRevision; 
     }
 }

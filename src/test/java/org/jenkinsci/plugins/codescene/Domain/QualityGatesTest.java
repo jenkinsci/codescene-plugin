@@ -85,6 +85,7 @@ public class QualityGatesTest {
                 true, // failOnDecliningCodeHealth,
                 "localhost", // origin URL
                 "master", // changeRef
+                null,
                 null);
     }
 
@@ -99,6 +100,7 @@ public class QualityGatesTest {
                 false, // failOnDecliningCodeHealth,
                 "localhost", // origin URL
                 "master", // changeRef
+                null,
                 null);
     }
 }

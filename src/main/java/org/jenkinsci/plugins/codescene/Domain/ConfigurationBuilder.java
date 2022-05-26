@@ -13,6 +13,7 @@ public class ConfigurationBuilder {
     private String originUrl;
     private String changeRef;
     private Commit currentCommit;
+    private String baseRevision;
 
     public ConfigurationBuilder codeSceneUrl(URL codeSceneUrl) {
         this.codeSceneUrl = codeSceneUrl;
@@ -62,8 +63,12 @@ public class ConfigurationBuilder {
         this.currentCommit = currentCommit;
         return this;
     }
+    public ConfigurationBuilder baseRevision(String baseRevision) {
+        this.baseRevision = baseRevision;
+        return this;
+    }
     public Configuration build() {
         return new Configuration(codeSceneUrl, user, gitRepositoryToAnalyze, couplingThresholdPercent,
-                letBuildPassOnFailedAnalysis, failOnFailedGoal, failOnDecliningCodeHealth, originUrl, changeRef, currentCommit);
+                letBuildPassOnFailedAnalysis, failOnFailedGoal, failOnDecliningCodeHealth, originUrl, changeRef, currentCommit, baseRevision);
     }
 }
