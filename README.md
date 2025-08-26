@@ -1,3 +1,8 @@
+# THIS REPOSITORY HAS BEEN DEPRECATED
+
+The API used by this this plugin will not be supported by CodeScene after version 7.0.5.
+Rather than using it, we recommend to use the functionality built into CodeScene to [integrate automated code reviews in Pull Requests](https://docs.enterprise.codescene.io/latest/guides/pr-integration/integrate-into-ci-cd.html#), or to use the [CodeScene CLI tool](https://docs.enterprise.codescene.io/latest/cli/index.html) 
+
 # codescene-jenkins-plugin
 
 [![Latest release](https://img.shields.io/github/release/jenkinsci/codescene-plugin.svg)](https://github.com/jenkinsci/codescene-plugin/releases/latest)
@@ -164,6 +169,8 @@ section in CodeScene on-prem documentation.
 
 
 ## Changelog
+* 1.5.8
+  * Deprecate this plugin
 * 1.5.7
   * Set target ref when calling the CodeScene API
 * 1.5.6
